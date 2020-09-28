@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>start page</title>
+	 <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<style type="text/css">
+	table, th, td {
+  border: 1px solid black;
+}
+
+ .tabs {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tabs__links {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    order: 0;
+    white-space: nowrap;
+    background-color: #fff;
+    border: 1px solid #e3f2fd;
+    box-shadow: 0 2px 4px 0 #e3f2fd;
+  }
+
+  .tabs__links>a {
+    display: inline-block;
+    text-decoration: none;
+    padding: 6px 10px;
+    text-align: center;
+    color: #1976d2;
+  }
+
+  .tabs__links>a:hover {
+    background-color: rgba(227, 242, 253, 0.3);
+  }
+
+  .tabs>#content-1:target~.tabs__links>a[href="#content-1"],
+  .tabs>#content-2:target~.tabs__links>a[href="#content-2"],
+  .tabs>#content-3:target~.tabs__links>a[href="#content-3"],
+  .tabs>#content-4:target~.tabs__links>a[href="#content-4"] {
+    background-color: #bbdefb;
+    cursor: default;
+  }
+
+  .tabs>div:not(.tabs__links) {
+    display: none;
+    order: 1;
+  }
+
+  .tabs>div:target {
+    display: block;
+  }
+
+</style>
+<h3> Logined at <span style="color:red;">{{res.username}}</span></h3>
+<div class="tabs">
+  <div id="content-1">
+<h2>About system server</h2>
+<hr>
+<table>
+	<tr>
+    <th>Computer Name</th>
+    <th>IP PC</th>
+    <th>System</th>
+    <th>version</th>
+    <th>machine</th>
+    <th>processor</th>
+    <th>servertime</th>
+    
+    
+  </tr>
+  <tr>
+    <td>{{res.about.host}}</td>
+    <td>{{res.about.IP}}</td>
+    <td>{{res.about.system}}</td>
+    <td>{{res.about.version}}</td>
+    <td>{{res.about.machine}}</td>
+    <td>{{res.about.processor}}</td>
+    <td>{{bt.year}}/{{bt.month}}/{{bt.day}} {{bt.hour}}:{{bt.minute}}:{{bt.second}}</td>
+  </tr>
+</table>
+</div>
+ <div id="content-2">
+<hr>
+<h2>About hardware server</h2>
+<hr>
+<table>
+	<tr>
+		<th>CPU phisical</th>
+	    <th>TOTAL CPU</th>
+	    <th>CPU %</th>
+	    <th>MEMORY used</th>
+	    <th>MEMORY total</th>
+	    <th>MEMORY %</th>
+	    <th>partition used</th>
+	    <th>partition total</th>
+	    <th>partition %</th>
+	</tr>
+	<tr>
+		<td>{{res.about.phisical_cpu}}</td>
+	    <td>{{res.about.total_cpu}}</td>
+	    <td>{{res.about.cpu_persent}}</td>
+	    <td>{{res.about.mem_used}}</td>
+	    <td>{{res.about.mem_total}}</td>
+	    <td>{{res.about.mem_percent}}</td>
+	    <td>{{res.about.part_used}}</td>
+	    <td>{{res.about.part_total}}</td>
+	    <td>{{res.about.part_procent}}</td>
+	</tr>
+</table>
+</div>
+ <div id="content-3">
+<h2>NET</h2>
+<hr>
+bytes sent : {{res.about.net_io.bytes_sent}} <br>
+bytes Received : {{res.about.net_io.bytes_recv}}
+
+
+<table>
+	<tr>
+		<td>Name interface</td>
+		<td>IP</td>
+		<td>NetMask</td>
+		<td>Broadcast</td>
+	</tr>
+	{%for i in res.about.net %}
+	<tr>
+		<td>{{i.name}}</td>
+		<td>{{i.ip}}</td>
+		<td>{{i.netmask}}</td>
+		<td>{{i.broadcast}}</td>
+	</tr>
+	{%endfor%}
+</table>
+</div>
+ <div id="content-4">
+<hr>
+<h2>Connections in INI File</h2>
+<hr>
+
+
+{%for c in data.connections%}
+<br>
+<h3>Connection Name  -  {{c.name}} </h3>
+<h3>Status connection <span style="color:{%if(connections[loop.index0].status)%}green{%else%}red{%endif%};">{{connections[loop.index0].status}}</span></h3>
+<h3>ip connection {{c.ip}}</h3>
+<h2>Points in Connection {{c.name}}</h2>
+<table>
+	<th>
+		<td>type</td>
+		<td>DB in PLC</td>
+		<td>start address</td>
+		<td>offset</td>
+		<td>tablename</td>
+	</th>
+{%for d in data.Data[c.data]%}
+<tr>
+	<td>{{ loop.index }}</td>
+	<td>{{d.type}}</td>
+	<td>{{d.DB}}</td>
+	<td>{{d.start}}</td>
+	<td>{{d.offset}}</td>
+	<td>{{d.tablename}}</td>
+</tr>
+
+{%endfor%}
+</table>
+<hr>
+{%endfor%}
+</div>
+<div class="tabs__links">
+    <a href="#content-1">System</a>
+    <a href="#content-2">Hardware</a>
+    <a href="#content-3">NET</a>
+    <a href="#content-4">Config file</a>
+  </div>
+</div>
+<script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+
+<script>
+	setInterval(reload,5000);
+	function reload(){
+		location.reload()
+	}
+	
+</script>
+</body>
+</html>

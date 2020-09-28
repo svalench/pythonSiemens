@@ -2,3 +2,5 @@
 #https://python-snap7.readthedocs.io/en/latest/installation.html
 python-snap7
 psycopg2-binary
+Flask
+psutil

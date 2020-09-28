@@ -1,0 +1,11 @@
+{
+	"connections":[
+		{"name":"connect1","ip":"192.168.1.80","rack":0,"slot":1,"data":0,"timeout":10,"reconnect":30},
+	],
+	"Data":[
+		[
+			{"type":"int","DB":2,"start":256,"offset":2,"tablename":"data_int1"},
+			{"type":"real","DB":2,"start":258,"offset":4,"tablename":"data_real1"},
+		],
+	]
+}

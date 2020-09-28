@@ -5,9 +5,12 @@ import datetime
 import math
 import time
 
-
 from settings import *
 from module_siemens import *
+from webserver import *
+
+
+
 
 # стартовая функция
 def main(plc="all"):
@@ -39,8 +42,10 @@ def opros(connection,num):
 		print('Hi! started function  - '+connection['name'])
 		plc1 = PlcRemoteUse(connection['ip'],connection['rack'],connection['slot'])
 		started = True
+		connections[num]['status'] = True
 	except:
 		started = False
+		connections[num]['status'] = False
 		print('error connection, try reconnection. Reconnect from '+ str(connection['reconnect'])+' sec')
 	if(started):																	# если установили идем дальше
 		exception = False
@@ -55,8 +60,9 @@ def opros(connection,num):
 				except:
 					exception = True												# если не смогли что забрать перезапускаем поток
 			if(exception):
+				connections[num]['status'] = False
 				print('Error getter value')
-				time.sleep(connection['reconnect'])									# перерыв на подключение
+				#time.sleep(connection['reconnect'])									# перерыв на подключение
 				main(num)
 				return False
 			else:
@@ -68,8 +74,9 @@ def opros(connection,num):
 		return False
 
 
-
+def runflask():
+	app.run()
 
 if __name__ == "__main__":
-    # execute only if run as a script
+    threading.Thread(target=runflask).start()
     main()

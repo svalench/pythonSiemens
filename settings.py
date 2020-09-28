@@ -1,6 +1,12 @@
 import sqlite3
 import psycopg2
 import sys
+
+USERNAME 	= 'wert'
+PASSWORD 	= '123'
+SECRET 		= 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RTdsff'
+TOKEN 		= 'tokenstart3dje34dfjd'
+
 # Массив для обпределения параметров по каждому элементу данных
 Data 	= [
 	{'type':'int','DB':2,'start':256,'offset':2,'tablename':"data_int1"},
