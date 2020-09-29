@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add connection</title>
+	 <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<div>
+	<a class="btn btn-primary" href="/">Home Page</a>
+</div>
+<div class="container">
+<form action="/add/connection" method="POST">
+	<div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" class="form-control" id="name" name="name" >
+  </div>
+   <div class="form-group">
+    <label for="plc">Type PLC</label>
+    <select class="form-control" id="plc" name="plc">
+      <option value="siemens">Siemens</option>
+      <option value="owen">Owen</option>
+      <option value="omron">Omron</option>
+      <option value="schneider">Schneider Electric</option>
+      <option value="rockwell">Rockwell</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="ip">IP address</label>
+    <input type="text" class="form-control" id="ip" name="ip" >
+  </div>
+  <div class="form-group">
+    <label for="rack">Rack</label>
+    <input type="number" step="1" class="form-control" id="rack" name="rack" >
+  </div>
+  <div class="form-group">
+    <label for="slot">Slot</label>
+    <input  type="number" step="1" class="form-control" id="slot" name="slot" >
+  </div>
+  <div class="form-group">
+    <label for="timeout">Timeout read data (sec)</label>
+    <input  type="number" step="1" class="form-control" value="10" id="timeout" name="timeout" >
+  </div>
+  <div class="form-group">
+    <label for="reconnect">Timeout reconnect to plc (sec)</label>
+    <input  type="number" step="1" class="form-control" value="30" id="reconnect" name="reconnect" >
+  </div>
+  <button type="success" class="btn btn-success">Save</button>
+</form>
+</div>
+
+<script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

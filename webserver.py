@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request,render_template
-from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections
+from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread
 import random
 import string
 import socket
@@ -7,8 +7,7 @@ import platform
 import psutil
 from datetime import datetime 
 import json
-
-
+from main import main
 TOKS = 'a'
 app = Flask('opc',static_url_path='',static_folder='static',)
 
@@ -91,6 +90,109 @@ app.secret_key = SECRET
 @app.route('/login')
 def red_to_login():
 	return redirect(url_for('login',error='loggined'))
+
+@app.route('/add/connection', methods=['GET', 'POST'])
+def addConnection():
+	if if_autorize():
+		return redirect(url_for('login',error='token is addled'))
+	if request.method == 'POST':
+		jsonData = None
+		with open('connections.json') as json_file:
+			data = json.load(json_file)
+			jsonData = data
+		countDataArray = len(jsonData['Data'])
+		jsonData['connections'].append({"name":request.form['name'],
+										"ip":request.form['ip'],
+										"rack":request.form['rack'],
+										"slot":request.form['slot'],
+										"data":countDataArray,
+										"timeout":request.form['timeout'],
+										"reconnect":request.form['reconnect'],
+										"plc":request.form['plc']})
+		jsonData['Data'].append([])
+		with open('connections.json', 'w') as outfile:
+			json.dump(jsonData, outfile)
+		stopAllThread()
+		return redirect(url_for('startPage'))
+
+	return render_template('addConnection.html')
+
+@app.route('/remove/connection/<int:id>', methods=['GET', 'POST'])
+def removeConnection(id):
+	if if_autorize():
+		return redirect(url_for('login',error='token is addled'))
+	jsonData = None
+	with open('connections.json') as json_file:
+		data = json.load(json_file)
+		jsonData = data
+	del jsonData['Data'][int(jsonData['connections'][id]['data'])]
+	del jsonData['connections'][id]
+	with open('connections.json', 'w') as outfile:
+		json.dump(jsonData, outfile)
+	stopAllThread()
+	return redirect(url_for('startPage'))
+
+
+
+@app.route('/add/point/<int:id>', methods=['GET', 'POST'])
+def addPoint(id):
+	if if_autorize():
+		return redirect(url_for('login',error='token is addled'))
+	if request.method == 'POST':
+		addToJson(request)
+	return render_template('addPoint.html',id=id)
+
+
+def addToJson(request):
+	jsonData = None
+	with open('connections.json') as json_file:
+		data = json.load(json_file)
+		jsonData = data
+	countDataArray = len(jsonData['Data'])
+	print(countDataArray)
+	if(countDataArray!=0):
+		countDataArrayConnection = len(jsonData['Data'][int(request.form['id'])])
+	if(request.form['type']=='int'):
+		offset = 2
+	elif(request.form['type']=='real'):
+		offset = 4
+	elif(request.form['type']=='double'):
+		offset = 4
+	else:
+		offset = 4
+	if(countDataArray!=0):
+		jsonData['Data'][int(request.form['id'])].append({"type":request.form['type'],
+							"DB":request.form['DB'],
+							"start":request.form['start'],
+							"offset":offset,
+							"tablename":request.form['tablename']})	
+	else:
+		jsonData['Data'].append([{"type":request.form['type'],
+							"DB":request.form['DB'],
+							"start":request.form['start'],
+							"offset":offset,
+							"tablename":request.form['tablename']}])
+	with open('connections.json', 'w') as outfile:
+		json.dump(jsonData, outfile)
+	stopAllThread()
+	#return redirect(url_for('startPage'))
+
+
+
+
+
+
+
+def stopAllThread():
+	global all_thread
+	print(all_thread)
+	for t in all_thread:
+		print(t)
+		t.stop()
+		all_thread.remove(t)
+	main()
+
+
 
 def if_autorize():
 	if(session['token'] != TOKS):

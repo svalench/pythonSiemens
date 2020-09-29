@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add point</title>
+	 <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+<div>
+	<a class="btn btn-primary" href="/">Home Page</a>
+</div>
+<div class="container">
+<form action="/add/point/{{id}}" method="POST">
+  <input type="number" name="id" value="{{id}}" hidden>
+	<div class="form-group">
+    <label for="tablename">Name Table</label>
+    <input type="text" class="form-control" id="tablename" name="tablename" >
+  </div>
+   <div class="form-group">
+    <label for="type">Type</label>
+    <select class="form-control" id="type" name="type">
+      <option value="int">Intager</option>
+      <option value="real">Real</option>
+      <option value="double">Double Intager</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="DB">DB</label>
+    <input type="number" step="1" class="form-control" id="DB" name="DB" >
+  </div>
+  <div class="form-group">
+    <label for="start">start addres in db</label>
+    <input  type="number" step="1" class="form-control" id="start" name="start" >
+  </div>
+
+  <button type="success" class="btn btn-success">Save</button>
+</form>
+</div>
+
+<script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

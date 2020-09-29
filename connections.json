@@ -1,11 +1,1 @@
-{
-	"connections":[
-		{"name":"connect1","ip":"192.168.1.80","rack":0,"slot":1,"data":0,"timeout":10,"reconnect":30}
-	],
-	"Data":[
-		[
-			{"type":"int","DB":2,"start":256,"offset":2,"tablename":"data_int1"},
-			{"type":"real","DB":2,"start":258,"offset":4,"tablename":"data_real1"}
-		]
-	]
-}
+{"connections": [{"name": "izospan", "ip": "192.168.1.80", "rack": "0", "slot": "1", "data": 0, "timeout": "10", "reconnect": "30", "plc": "siemens"}, {"name": "wert", "ip": "192.168.1.80", "rack": "0", "slot": "1", "data": 1, "timeout": "10", "reconnect": "30", "plc": "siemens"}], "Data": [[{"type": "int", "DB": "2", "start": "256", "offset": 2, "tablename": "int_tab12"}, {"type": "real", "DB": "2", "start": "258", "offset": 4, "tablename": "real"}], [{"type": "int", "DB": "2", "start": "256", "offset": 2, "tablename": "asddsa"}]]}

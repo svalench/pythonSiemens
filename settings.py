@@ -7,17 +7,9 @@ PASSWORD 	= '123'
 SECRET 		= 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RTdsff'
 TOKEN 		= 'tokenstart3dje34dfjd'
 
-# Массив для обпределения параметров по каждому элементу данных
-Data 	= [
-	{'type':'int','DB':2,'start':256,'offset':2,'tablename':"data_int1"},
-	{'type':'real','DB':2,'start':258,'offset':4,'tablename':"data_real1"},
-]
 
-#массив с объектами данных для каждого подключения
-connections 	= [
-	{'name':'connect1','ip':'192.168.1.80','rack':0,'slot':1,'data':Data,'timeout':10,'reconnect':30},
-]
-
+connections = []
+all_thread = []
 # подключение к базе данных
 DB = {
 	'driver':'postgres',

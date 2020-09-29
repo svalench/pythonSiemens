@@ -116,7 +116,7 @@ class PlcRemoteUse():
 			elif(type=='real'):
 				result = self.disassembleFloat(dataRead)
 			elif(type=='double'):
-				result = self.disassembleDouble(dataRead)
+				result = self.disassembleInt(dataRead)
 			else:
 				result = 'error type'
 			return result

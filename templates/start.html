@@ -143,15 +143,21 @@ bytes Received : {{res.about.net_io.bytes_recv}}
 </div>
  <div id="content-4">
 <hr>
-<h2>Connections in INI File</h2>
+<h2>Connections in File</h2> <a href="/add/connection" class="btn btn-primary">ADD Connection</a>
 <hr>
 
 
 {%for c in data.connections%}
 <br>
-<h3>Connection Name  -  {{c.name}} </h3>
-<h3>Status connection <span style="color:{%if(connections[loop.index0].status)%}green{%else%}red{%endif%};">{{connections[loop.index0].status}}</span></h3>
-<h3>ip connection {{c.ip}}</h3>
+<h3>Connection Name  -  {{c.name}} </h3>  <a class="btn btn-danger" href="remove/connection/{{loop.index0}}">Remove</a>
+<h3>Status connection {%if( 'status' in connections[loop.index0])%}
+	<span style="border: solid; font-size: 68px; color:
+	{%if(connections[loop.index0].status)%}green{%else%}red{%endif%};">
+{{connections[loop.index0].status}}
+</span>
+{%endif%}
+</h3>
+<h3>ip connection {{c.ip}} type PLC <span style="color:red;font-size: 42px;border: solid;">{{connections[loop.index0].plc}}</span></h3>
 <h2>Points in Connection {{c.name}}</h2>
 <table>
 	<th>
@@ -160,6 +166,8 @@ bytes Received : {{res.about.net_io.bytes_recv}}
 		<td>start address</td>
 		<td>offset</td>
 		<td>tablename</td>
+		<td>action</td>
+		<td>action</td>
 	</th>
 {%for d in data.Data[c.data]%}
 <tr>
@@ -169,10 +177,13 @@ bytes Received : {{res.about.net_io.bytes_recv}}
 	<td>{{d.start}}</td>
 	<td>{{d.offset}}</td>
 	<td>{{d.tablename}}</td>
+	<td><button>Delete Table and Point</button></td>
+	<td><button>Delete only point</button></td>
 </tr>
 
 {%endfor%}
 </table>
+<a href="add/point/{{loop.index0}}" class="btn btn-primary">ADD Point to PLC</a>
 <hr>
 {%endfor%}
 </div>
