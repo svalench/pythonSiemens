@@ -184,18 +184,14 @@ def addToJson(request):
 
 
 def stopAllThread():
-	global all_thread
-	try:
-		for t in th.all_thread:
-			try:
-				t.stop()
-		
-			except:
-				pass
-		th.all_thread.clear()
-		main()
-	except:
-		pass
+	for t in th.all_thread:
+		try:
+			t.stop()
+		except:
+			pass
+	th.all_thread.clear()
+	main()
+
 
 
 

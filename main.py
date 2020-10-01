@@ -54,7 +54,7 @@ class MyThread(threading.Thread):
 			c = conn.cursor()
 			while True:																	# запускаем бесконечный цикл на опрос
 				if self.stopped(): 
-					return
+					return False
 				for i in args[0]['data']:
 					try:
 						a = plc1.getValue(int(i['DB']),int(i['start']),int(i['offset']),i['type'])		# забираем значение с плк и пишем в БД
@@ -77,7 +77,6 @@ class MyThread(threading.Thread):
 			return False
 
 
-killAll = False
 # стартовая функция
 def main(plc="all"):
 	global all_thread
@@ -110,32 +109,23 @@ def main(plc="all"):
 				print('no data for read in ')
 			connections.append(i)
 			#запускаем поток для каждого описанного в settings подключкения
-			t = MyThread(target=opros,args=[i,count,killAll])
+			t = MyThread(args=[i,count])
+			try:
+				th.all_thread[count].stop()
+			except:
+				pass
 			th.all_thread.append(t)
 			t.start()
 			count+=1
 			
 	else:
-		print(connections[plc])
-		t = MyThread(target=opros,args=[connections[plc],plc,killAll])
+		t = MyThread(args=[connections[plc],plc])
 		th.all_thread.append(t)
 		t.start()
 		print('Oops, somthing wrong! reconected to  - '+connections[plc]['name'])
 
 
 
-
-
-
-
-
-
-
-
-
-
-def opros():
-	pass
 
 
 
