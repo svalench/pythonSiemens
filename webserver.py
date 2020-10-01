@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request,render_template
-from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread
+from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread,th
 import random
 import string
 import socket
@@ -125,7 +125,7 @@ def removeConnection(id):
 	with open('connections.json') as json_file:
 		data = json.load(json_file)
 		jsonData = data
-	del jsonData['Data'][int(jsonData['connections'][id]['data'])]
+	jsonData['Data'][int(jsonData['connections'][id]['data'])]=[]
 	del jsonData['connections'][id]
 	with open('connections.json', 'w') as outfile:
 		json.dump(jsonData, outfile)
@@ -185,12 +185,17 @@ def addToJson(request):
 
 def stopAllThread():
 	global all_thread
-	print(all_thread)
-	for t in all_thread:
-		print(t)
-		t.stop()
-		all_thread.remove(t)
-	main()
+	try:
+		for t in th.all_thread:
+			try:
+				t.stop()
+		
+			except:
+				pass
+		th.all_thread.clear()
+		main()
+	except:
+		pass
 
 
 

@@ -86,6 +86,7 @@ def main(plc="all"):
 		data = json.load(json_file)
 		jsonDataFile = data
 	if(plc=="all"):
+		connections.clear()
 		#all_thread = []
 	# если нет индекса переподключаем все подключения
 		count = 0
@@ -107,18 +108,17 @@ def main(plc="all"):
 				i['data'] = jsonDataFile['Data'][i['data']]
 			except:
 				print('no data for read in ')
-				print(i)
 			connections.append(i)
 			#запускаем поток для каждого описанного в settings подключкения
 			t = MyThread(target=opros,args=[i,count,killAll])
-			all_thread.append(t)
+			th.all_thread.append(t)
 			t.start()
 			count+=1
 			
 	else:
 		print(connections[plc])
 		t = MyThread(target=opros,args=[connections[plc],plc,killAll])
-		all_thread.append(t)
+		th.all_thread.append(t)
 		t.start()
 		print('Oops, somthing wrong! reconected to  - '+connections[plc]['name'])
 

@@ -7,7 +7,11 @@ PASSWORD 	= '123'
 SECRET 		= 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RTdsff'
 TOKEN 		= 'tokenstart3dje34dfjd'
 
+class Threads:
+	def __init__(self):
+		self.all_thread = []
 
+th = Threads()
 connections = []
 all_thread = []
 # подключение к базе данных
