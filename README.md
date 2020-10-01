@@ -5,5 +5,9 @@
 ## Установка
 #### Склонте проект.
 `git clone https://github.com/svalench/pythonSiemens.git`
+### Установите пакет Snap7
+### Ссылка  [тут](https://python-snap7.readthedocs.io/en/latest/installation.html)
 #### Устновите зависимости
 `pip3 -r requiremens.txt`
+#### Запустите файл main
+`python3 main.py`
