@@ -142,6 +142,92 @@ bytes Received : {{res.about.net_io.bytes_recv}}
 </table>
 </div>
  <div id="content-4">
+
+
+
+
+
+
+ <div class="container" style="margin-top: 15px;margin-bottom: 15px;"><a  href="/add/connection" class="btn btn-primary btn-block btn-lg" type="button">Add new Connection Name</a></div>
+    <div class="container">
+      {%for c in data.connections%}
+        <hr style="width:90%;">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>{{c.name}}</h1>
+            </div>
+            <div class="col"><a class="btn btn-success btn-block" href="/add/connection" type="button">Add Point</a></div>
+            <div class="col"><a class="btn btn-outline-danger btn-block" href="remove/connection/{{loop.index0}}" type="button">Remove Connection</a></div>
+        </div>
+        <div class="row d-xl-flex align-items-center align-items-xl-center">
+            <div class="col-auto">
+                <h5>IP {{c.ip}}</h5>
+            </div>
+            <div class="col d-xl-flex align-items-xl-center"><svg height="24" width="24">
+              {%if( 'status' in connections[loop.index0])%}
+  <circle cx="12" cy="10" r="9" stroke="black" stroke-width="1" fill="{%if(connections[loop.index0].status)%}green{%else%}red{%endif%}" />
+  {%endif%}
+</svg>
+</div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <h5>Type PLC {{connections[loop.index0].plc}}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Type</th>
+                                <th>Number DB</th>
+                                <th>Start Adress</th>
+                                <th>Offset</th>
+                                <th>Table Name</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {%for d in data.Data[c.data]%}
+                            <tr class="align-items-xl-center">
+                                <td>{{ loop.index }}</td>
+                                <td>{{d.type}}</td>
+                                <td>{{d.DB}}</td>
+                                <td>{{d.start}}</td>
+                                <td>{{d.offset}}</td>
+                                <td>{{d.tablename}}</td>
+                                <td><button class="btn btn-outline-dark btn-block" type="button">Delete Only Point</button></td>
+                                <td><button class="btn btn-outline-danger btn-block" type="button">Delete Table and Point</button></td>
+                            </tr>
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+
 <hr>
 <h2>Connections in File</h2> <a href="/add/connection" class="btn btn-primary">ADD Connection</a>
 <hr>
@@ -185,7 +271,7 @@ bytes Received : {{res.about.net_io.bytes_recv}}
 </table>
 <a href="add/point/{{c.data}}" class="btn btn-primary">ADD Point to PLC</a>
 <hr>
-{%endfor%}
+{%endfor%} -->
 </div>
 <div class="tabs__links">
     <a href="#content-1">System</a>

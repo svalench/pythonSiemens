@@ -4,7 +4,7 @@ import json
 import datetime
 import math
 import time
-
+from cprint import *
 from settings import *
 from module_siemens import *
 from webserver import *
@@ -40,14 +40,14 @@ class MyThread(threading.Thread):
 	def run(self):
 		args = self.kwargs['args']
 		try:																			# пробузем установить соединение
-			print('Hi! started function  - '+args[0]['name'])
+			cprint('Hi! started function  - '+args[0]['name'])
 			plc1 = PlcRemoteUse(args[0]['ip'],int(args[0]['rack']),int(args[0]['slot']))
 			started = True
 			connections[args[1]]['status'] = True
 		except:
 			started = False
 			connections[args[1]]['status'] = False
-			print('error connection, try reconnection. Reconnect from '+ str(args[0]['reconnect'])+' sec')
+			cprint.err('error connection, try reconnection. Reconnect from '+ str(args[0]['reconnect'])+' sec', interrupt=False)
 		if(started):																	# если установили идем дальше
 			exception = False
 			conn = createConnection()													# устанавливаем подключение в нашем потоке
@@ -64,12 +64,12 @@ class MyThread(threading.Thread):
 						exception = True												# если не смогли что забрать перезапускаем поток
 				if(exception):
 					connections[args[1]]['status'] = False
-					print('Error getter value')
+					cprint.warn('Error getter value')
 					time.sleep(int(args[0]['reconnect']))									# перерыв на подключение
 					main(args[1])
 					return False
 				else:
-					print('data returned')
+					cprint.info('data returned')
 					time.sleep(int(args[0]['timeout']))									# перерыв на опрос
 		else:
 			time.sleep(int(args[0]['reconnect']))
@@ -106,7 +106,7 @@ def main(plc="all"):
 			try:
 				i['data'] = jsonDataFile['Data'][i['data']]
 			except:
-				print('no data for read in ')
+				cprint.warn('no data for read in ')
 			connections.append(i)
 			#запускаем поток для каждого описанного в settings подключкения
 			t = MyThread(args=[i,count])
@@ -122,7 +122,7 @@ def main(plc="all"):
 		t = MyThread(args=[connections[plc],plc])
 		th.all_thread.append(t)
 		t.start()
-		print('Oops, somthing wrong! reconected to  - '+connections[plc]['name'])
+		cprint.err('Oops, somthing wrong! reconected to  - '+connections[plc]['name'], interrupt=False)
 
 
 

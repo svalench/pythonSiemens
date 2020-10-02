@@ -4,3 +4,4 @@ python-snap7
 psycopg2-binary
 Flask
 psutil
+cprint
