@@ -3,7 +3,6 @@ import time
 
 from secoundary_functions.module_siemens import PlcRemoteUse
 from secoundary_functions.supporting import *
-from settings import th
 from cprint import *
 from main import main
 

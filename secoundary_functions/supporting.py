@@ -2,10 +2,8 @@
 from cprint import *
 from settings import *
 from secoundary_functions.mythread import MyThread
-
 from web.webserver import *
-from main import main
-#connections = []
+
 def createConeectionToPlc(jsonDataFile):
 	global connections
 	count = 0
