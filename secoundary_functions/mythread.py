@@ -18,9 +18,14 @@ class MyThread(threading.Thread):
     _plc1 - plc connection object, default None
     _exception  - error flag when receiving data from the PLC, default False
 
+    public methods:
     method stop - stops the flow
     method stopped - checks if the thread is stopped
     method run  - method in which the main function is performed (polling the plc)
+
+    protected methods:
+    _try_connect_to_plc - connection to PLC
+    _try_to_connect_db - connection to database
 
     """
 
@@ -32,14 +37,16 @@ class MyThread(threading.Thread):
         self._exception = False
         self._plc1 = None
 
-    # function using _stop function
-    def stop(self):
+    def stop(self) -> None:
+        """stop this thread"""
         self._stop.set()
 
     def stopped(self):
+        """check the stop thread"""
         return self._stop.isSet()
 
-    def _try_connect_to_plc(self):
+    def _try_connect_to_plc(self) -> None:
+        """connected to PLC"""
         global connections
         args = self.kwargs['args']
         try:
@@ -53,14 +60,24 @@ class MyThread(threading.Thread):
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
-    def _try_to_connect_db(self):
+    def _try_to_connect_db(self) -> None:
+        """Connected to DB"""
         try:
             self._conn = createConnection()
             self._c = self._conn.cursor()
         except:
-            cprint.err('error connection to DB for '+str(self.kwargs['args'][0]['name']),interrupt=False)
+            cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
-    def run(self):
+    def _write_data_to_db(self, i) -> None:
+        try:
+            a = self._plc1.getValue(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
+            self._c.execute(
+                '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
+            self._conn.commit()
+        except:
+            self._exception = True
+
+    def run(self) -> None:
         global connections
         args = self.kwargs['args']
         self._try_connect_to_plc()
@@ -70,13 +87,7 @@ class MyThread(threading.Thread):
                 if self.stopped():
                     return False
                 for i in args[0]['data']:
-                    try:
-                        a = self._plc1.getValue(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
-                        self._c.execute(
-                            '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
-                        self._conn.commit()
-                    except:
-                        self._exception = True
+                    self._write_data_to_db(i)
                 if (self._exception):
                     connections[args[1]]['status'] = False
                     cprint.warn('Error getter value')
