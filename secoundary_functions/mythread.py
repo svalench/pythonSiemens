@@ -26,6 +26,7 @@ class MyThread(threading.Thread):
     protected methods:
     _try_connect_to_plc - connection to PLC
     _try_to_connect_db - connection to database
+    _write_data_to_db -
 
     """
 
@@ -69,6 +70,13 @@ class MyThread(threading.Thread):
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
     def _write_data_to_db(self, i) -> None:
+        """write data to DB from PLC, i - dict with parametrs
+        DB - DB block in PLC
+        start - offset in DB
+        offset - offset from start
+        type - data type (int,real,double)
+
+        """
         try:
             a = self._plc1.getValue(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
             self._c.execute(
