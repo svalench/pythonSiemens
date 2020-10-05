@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request,render_template
-from .settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread,th
+from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread,th
 import random
 import string
 import socket
@@ -7,9 +7,9 @@ import platform
 import psutil
 from datetime import datetime 
 import json
-from .main import main
+from main import main
 TOKS = 'a'
-app = Flask('opc',static_url_path='',static_folder='./static',template_folder='./templates')
+app = Flask('opc',static_url_path='',static_folder='web/static',template_folder='web/templates')
 
 @app.route('/', methods=['GET', 'POST'])
 def startPage():
