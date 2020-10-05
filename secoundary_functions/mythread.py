@@ -13,6 +13,7 @@ class MyThread(threading.Thread):
     public property:
     started - property keeps track of whether the connection to the plc has occurred, default False
 
+
     protected property:
     _stop - inherits from the parent the thread stop event
     _plc1 - plc connection object, default None
