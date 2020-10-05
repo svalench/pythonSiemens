@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request,render_template
-from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread,th
+from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread
 import random
 import string
 import socket
@@ -7,12 +7,15 @@ import platform
 import psutil
 from datetime import datetime 
 import json
-from main import main
+from main import main,th
+from cprint import *
+from secoundary_functions.mythread import MyThread
 TOKS = 'a'
 app = Flask('opc',static_url_path='',static_folder='web/static',template_folder='web/templates')
 
 @app.route('/', methods=['GET', 'POST'])
 def startPage():
+	from main import th
 	if 'username' not in session:
 		return redirect(url_for('login',error='loggined'))
 	if if_autorize():
@@ -69,7 +72,7 @@ def startPage():
 						'net_io':net_io,
 					}
 			}
-	return render_template('start.html',res=obj,bt=bt,data=jsonData,connections=connections)
+	return render_template('start.html',res=obj,bt=bt,data=jsonData,connections=th.connections)
 
 @app.route('/login/<error>', methods=['GET', 'POST'])
 def login(error):
@@ -184,12 +187,12 @@ def addToJson(request):
 
 
 def stopAllThread():
-	for t in th.all_thread:
+	cprint.warn('---------------stop ALL thread-----------------')
+	for t in MyThread:
 		try:
 			t.stop()
 		except:
-			pass
-	th.all_thread.clear()
+			cprint.warn('no stop thread')
 	main()
 
 

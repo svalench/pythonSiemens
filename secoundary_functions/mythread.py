@@ -5,9 +5,13 @@ from secoundary_functions.module_siemens import PlcRemoteUse
 from secoundary_functions.supporting import *
 from cprint import *
 from main import main
+from main import th
 
+class IterThread(type):
+    def __iter__(cls):
+        return iter(cls._allThread)
 
-class MyThread(threading.Thread):
+class MyThread(threading.Thread,metaclass=IterThread):
     """
     class extending the thread for the task of starting the poll, where:
     public property:
@@ -30,7 +34,7 @@ class MyThread(threading.Thread):
     _reconnect_to_plc - if connection with  PLC  not established stop this tread and create new
 
     """
-
+    _allThread = []
     def __init__(self, *args, **kwargs):
         super(MyThread, self).__init__(*args, **kwargs)
         self._stop = threading.Event()
@@ -38,8 +42,14 @@ class MyThread(threading.Thread):
         self.started = False
         self._exception = False
         self._plc1 = None
+        self._allThread.append(self)
 
-    def stop(self) -> None:
+    def __del__(self):
+        self._allThread.remove(self)
+
+    def deleteFromList(self,obj):
+        self._allThread.remove(obj)
+    def stop(self):
         """stop this thread"""
         self._stop.set()
 
@@ -47,18 +57,17 @@ class MyThread(threading.Thread):
         """check the stop thread"""
         return self._stop.isSet()
 
-    def _try_connect_to_plc(self) -> None:
+    def _try_connect_to_plc(self):
         """connected to PLC"""
-        global connections
         args = self.kwargs['args']
         try:
             cprint('Hi! started function  - ' + args[0]['name'])
             self.plc1 = PlcRemoteUse(args[0]['ip'], int(args[0]['rack']), int(args[0]['slot']))
             self.started = True
-            connections[args[1]]['status'] = True
+            th.connections[args[1]]['status'] = True
         except:
             self.started = False
-            connections[args[1]]['status'] = False
+            th.connections[args[1]]['status'] = False
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
@@ -84,12 +93,13 @@ class MyThread(threading.Thread):
                 '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
             self._conn.commit()
         except:
+            self._stop()
             self._exception = True
 
     def _reconnect_to_plc(self):
         """if connection with  PLC  not established stop this tread and create new"""
         if (not self.started):
-            cprint.warn('error conection to plc ' +str(self.kwargs['args'][0]['name']))
+            cprint.warn('error conection to plc ' +str(self.kwargs['args'][0]['name']) + " count - "+ str(self.kwargs['args'][1]))
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
             main(self.kwargs['args'][1])
             self.stop()
@@ -102,12 +112,18 @@ class MyThread(threading.Thread):
         self._try_to_connect_db()
         self._reconnect_to_plc()
         while True:
+            for t in MyThread:
+                print(t.stopped())
+                if(t.stopped()):
+                    t.stop()
+                    t.deleteFromList(t)
             if self.stopped():
-                return False
+                #self.__del__()
+                break
             for i in args[0]['data']:
                 self._write_data_to_db(i)
             if (self._exception):
-                connections[args[1]]['status'] = False
+                th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
                 time.sleep(int(args[0]['reconnect']))
                 main(args[1])

@@ -3,11 +3,18 @@ from cprint import *
 from settings import *
 from secoundary_functions.mythread import MyThread
 from web.webserver import *
-
-
+from main import th
 def createConeectionToPlc(jsonDataFile):
-    global connections
+    #from main import th
     count = 0
+    for i in MyThread:
+        try:
+            i.stop()
+            i.kill()
+            cprint.info('thread stoped')
+        except:
+            cprint.warn('no stop thread')
+
     for i in jsonDataFile['connections']:
         for a in jsonDataFile['Data'][i['data']]:
             if (a['type'] == 'int'):
@@ -26,12 +33,8 @@ def createConeectionToPlc(jsonDataFile):
             i['data'] = jsonDataFile['Data'][i['data']]
         except:
             cprint.warn('no data for read in connection')
-        connections.append(i)
+        th.connections.append(i)
         # запускаем поток для каждого описанного в settings подключкения
-        try:
-            th.all_thread[count].stop()
-        except:
-            cprint.warn('no stop thread')
         startThread(i, count)
         count += 1
 
