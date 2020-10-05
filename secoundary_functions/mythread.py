@@ -87,6 +87,7 @@ class MyThread(threading.Thread):
             self._exception = True
 
     def _reconnect_to_plc(self):
+        """if connection with  PLC  not established stop this tread and create new"""
         if (not self.started):
             cprint.warn('error conection to plc ' +str(self.kwargs['args'][0]['name']))
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
@@ -94,6 +95,7 @@ class MyThread(threading.Thread):
             self.stop()
 
     def run(self):
+        """mail loop of thread"""
         global connections
         args = self.kwargs['args']
         self._try_connect_to_plc()
