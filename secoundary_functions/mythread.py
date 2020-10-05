@@ -26,7 +26,8 @@ class MyThread(threading.Thread):
     protected methods:
     _try_connect_to_plc - connection to PLC
     _try_to_connect_db - connection to database
-    _write_data_to_db -
+    _write_data_to_db - write data to DB from PLC
+    _reconnect_to_plc - if connection with  PLC  not established stop this tread and create new
 
     """
 
@@ -85,27 +86,30 @@ class MyThread(threading.Thread):
         except:
             self._exception = True
 
+    def _reconnect_to_plc(self):
+        if (not self.started):
+            cprint.warn('error conection to plc ' +str(self.kwargs['args'][0]['name']))
+            time.sleep(int(self.kwargs['args'][0]['reconnect']))
+            main(self.kwargs['args'][1])
+            self.stop()
+
     def run(self):
         global connections
         args = self.kwargs['args']
         self._try_connect_to_plc()
-        if (self.started):
-            self._try_to_connect_db()
-            while True:
-                if self.stopped():
-                    return False
-                for i in args[0]['data']:
-                    self._write_data_to_db(i)
-                if (self._exception):
-                    connections[args[1]]['status'] = False
-                    cprint.warn('Error getter value')
-                    time.sleep(int(args[0]['reconnect']))
-                    main(args[1])
-                    return False
-                else:
-                    cprint.info('data returned')
-                    time.sleep(int(args[0]['timeout']))
-        else:
-            time.sleep(int(args[0]['reconnect']))
-            main(args[1])
-            return False
+        self._try_to_connect_db()
+        self._reconnect_to_plc()
+        while True:
+            if self.stopped():
+                return False
+            for i in args[0]['data']:
+                self._write_data_to_db(i)
+            if (self._exception):
+                connections[args[1]]['status'] = False
+                cprint.warn('Error getter value')
+                time.sleep(int(args[0]['reconnect']))
+                main(args[1])
+                return False
+            else:
+                cprint.info('data returned')
+                time.sleep(int(args[0]['timeout']))
