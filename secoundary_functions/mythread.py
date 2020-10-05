@@ -24,7 +24,6 @@ class MyThread(threading.Thread):
     method run  - method in which the main function is performed (polling the plc)
 
     protected methods:
-
     _try_connect_to_plc - connection to PLC
     _try_to_connect_db - connection to database
 
