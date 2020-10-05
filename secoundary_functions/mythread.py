@@ -77,7 +77,7 @@ class MyThread(threading.Thread):
         except:
             self._exception = True
 
-    def run(self) -> None:
+    def run(self):
         global connections
         args = self.kwargs['args']
         self._try_connect_to_plc()
