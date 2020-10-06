@@ -99,7 +99,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
             self._conn.commit()
         except:
-            self._stop()
             self._exception = True
 
     def _reconnect_to_plc(self):
@@ -114,7 +113,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
     def run(self):
         """mail loop of thread"""
-        global connections
         args = self.kwargs['args']
         self._try_connect_to_plc()
         self._try_to_connect_db()
@@ -130,7 +128,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 if self not in MyThread:
                     break
             if self.stopped():
-                # self.__del__()
                 return False
             for i in args[0]['data']:
                 self._write_data_to_db(i)
