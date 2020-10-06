@@ -7,15 +7,18 @@ from cprint import *
 from main import main
 from main import th
 
+
 class IterThread(type):
     def __iter__(cls):
         return iter(cls._allThread)
 
-class MyThread(threading.Thread,metaclass=IterThread):
+
+class MyThread(threading.Thread, metaclass=IterThread):
     """
     class extending the thread for the task of starting the poll, where:
     public property:
     started - property keeps track of whether the connection to the plc has occurred, default False
+    destroyThread - this property check for stop restart, default False
 
     protected property:
     _stop - inherits from the parent the thread stop event
@@ -35,6 +38,7 @@ class MyThread(threading.Thread,metaclass=IterThread):
 
     """
     _allThread = []
+
     def __init__(self, *args, **kwargs):
         super(MyThread, self).__init__(*args, **kwargs)
         self._stop = threading.Event()
@@ -43,12 +47,14 @@ class MyThread(threading.Thread,metaclass=IterThread):
         self._exception = False
         self._plc1 = None
         self._allThread.append(self)
+        self.destroyThread = False
 
     def __del__(self):
         self._allThread.remove(self)
 
-    def deleteFromList(self,obj):
+    def deleteFromList(self, obj):
         self._allThread.remove(obj)
+
     def stop(self):
         """stop this thread"""
         self._stop.set()
@@ -71,7 +77,7 @@ class MyThread(threading.Thread,metaclass=IterThread):
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
-    def _try_to_connect_db(self) -> None:
+    def _try_to_connect_db(self):
         """Connected to DB"""
         try:
             self._conn = createConnection()
@@ -79,7 +85,7 @@ class MyThread(threading.Thread,metaclass=IterThread):
         except:
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
-    def _write_data_to_db(self, i) -> None:
+    def _write_data_to_db(self, i):
         """write data to DB from PLC, i - dict with parametrs
         DB - DB block in PLC
         start - offset in DB
@@ -99,9 +105,11 @@ class MyThread(threading.Thread,metaclass=IterThread):
     def _reconnect_to_plc(self):
         """if connection with  PLC  not established stop this tread and create new"""
         if (not self.started):
-            cprint.warn('error conection to plc ' +str(self.kwargs['args'][0]['name']) + " count - "+ str(self.kwargs['args'][1]))
+            cprint.warn('error conection to plc ' + str(self.kwargs['args'][0]['name']) + " count - " + str(
+                self.kwargs['args'][1]))
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
-            main(self.kwargs['args'][1])
+            if not self.destroyThread:
+                main(self.kwargs['args'][1])
             self.stop()
 
     def run(self):
@@ -111,22 +119,27 @@ class MyThread(threading.Thread,metaclass=IterThread):
         self._try_connect_to_plc()
         self._try_to_connect_db()
         self._reconnect_to_plc()
+
         while True:
             for t in MyThread:
                 print(t.stopped())
-                if(t.stopped()):
+                if (t.stopped()):
                     t.stop()
                     t.deleteFromList(t)
+                    break
+                if self not in MyThread:
+                    break
             if self.stopped():
-                #self.__del__()
-                break
+                # self.__del__()
+                return False
             for i in args[0]['data']:
                 self._write_data_to_db(i)
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
                 time.sleep(int(args[0]['reconnect']))
-                main(args[1])
+                if not self.destroyThread:
+                    main(args[1])
                 return False
             else:
                 cprint.info('data returned')

@@ -5,15 +5,19 @@ from secoundary_functions.mythread import MyThread
 from web.webserver import *
 from main import th
 def createConeectionToPlc(jsonDataFile):
-    #from main import th
     count = 0
     for i in MyThread:
+
         try:
+            i.destroyThread  =True
             i.stop()
-            i.kill()
             cprint.info('thread stoped')
         except:
             cprint.warn('no stop thread')
+        try:
+            del (i)
+        except:
+            cprint.warn('no delete class')
 
     for i in jsonDataFile['connections']:
         for a in jsonDataFile['Data'][i['data']]:

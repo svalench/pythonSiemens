@@ -26,8 +26,11 @@ def main(plc="all"):
         createConeectionToPlc(jsonDataFile)
     else:
         from secoundary_functions.supporting import startThread
-        jsonDataFile['connections'][plc]['data'] = jsonDataFile['Data'][jsonDataFile['connections'][plc]['data']]
-        startThread(jsonDataFile['connections'][plc], plc)
+        try:
+            jsonDataFile['connections'][plc]['data'] = jsonDataFile['Data'][jsonDataFile['connections'][plc]['data']]
+            startThread(jsonDataFile['connections'][plc], plc)
+        except:
+            pass
         cprint.err('Oops, somthing wrong! reconected to  - ' + th.connections[plc]['name'], interrupt=False)
 
 

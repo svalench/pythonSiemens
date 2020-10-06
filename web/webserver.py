@@ -188,11 +188,6 @@ def addToJson(request):
 
 def stopAllThread():
 	cprint.warn('---------------stop ALL thread-----------------')
-	for t in MyThread:
-		try:
-			t.stop()
-		except:
-			cprint.warn('no stop thread')
 	main()
 
 
