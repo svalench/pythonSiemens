@@ -11,11 +11,13 @@ class Threads:
     connections - list for connections
 
     """
+
     def __init__(self):
         self.all_thread = []
         self.connections = []
 
-#object for collections threads and connections
+
+# object for collections threads and connections
 th = Threads()
 
 

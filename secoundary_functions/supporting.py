@@ -1,9 +1,9 @@
-
 from cprint import *
 from settings import *
 from secoundary_functions.mythread import MyThread
 from web.webserver import *
 from main import th
+
 
 def create_coneection_to_plc(jsonDataFile) -> None:
     """
@@ -14,7 +14,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
     # stop all threads
     for i in MyThread:
         try:
-            i.destroyThread  =True
+            i.destroyThread = True
             i.stop()
             cprint.info('thread stoped')
         except:
@@ -23,7 +23,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
             del (i)
         except:
             cprint.warn('no delete class')
-    #try create table in DB
+    # try create table in DB
     for i in jsonDataFile['connections']:
         for a in jsonDataFile['Data'][i['data']]:
             if (a['type'] == 'int'):
