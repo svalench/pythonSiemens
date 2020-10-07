@@ -19,21 +19,21 @@ def main(plc="all"):
         data = json.load(json_file)
         jsonDataFile = data
     if (plc == "all"):
-        from secoundary_functions.supporting import createConeectionToPlc
+        from secoundary_functions.supporting import create_coneection_to_plc
         # очищаем лист с подлкючениями
         th.connections.clear()
         # если нет индекса переподключаем все подключения
-        createConeectionToPlc(jsonDataFile)
+        create_coneection_to_plc(jsonDataFile)
     else:
-        from secoundary_functions.supporting import startThread
+        from secoundary_functions.supporting import start_thread
         try:
             jsonDataFile['connections'][plc]['data'] = jsonDataFile['Data'][jsonDataFile['connections'][plc]['data']]
-            startThread(jsonDataFile['connections'][plc], plc)
+            start_thread(jsonDataFile['connections'][plc], plc)
         except:
             pass
         cprint.err('Oops, somthing wrong! reconected to  - ' + th.connections[plc]['name'], interrupt=False)
 
 
 if __name__ == "__main__":
-    threading.Thread(target=runflask).start()
+    threading.Thread(target=run_flask).start()
     main()

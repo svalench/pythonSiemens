@@ -29,6 +29,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
     method stop - stops the flow
     method stopped - checks if the thread is stopped
     method run  - method in which the main function is performed (polling the plc)
+    deleteFromList - method for delete this object from list of objects
+    run - main cycle in thread
 
     protected methods:
     _try_connect_to_plc - connection to PLC
@@ -111,16 +113,16 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 main(self.kwargs['args'][1])
             self.stop()
 
+    @property
     def run(self):
         """mail loop of thread"""
         args = self.kwargs['args']
         self._try_connect_to_plc()
         self._try_to_connect_db()
         self._reconnect_to_plc()
-
+        #main cycle
         while True:
             for t in MyThread:
-                print(t.stopped())
                 if (t.stopped()):
                     t.stop()
                     t.deleteFromList(t)
