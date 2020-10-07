@@ -18,6 +18,7 @@ def start_page():
     """
     function for start page
     :return:
+
     """
     from main import th
     """if user autorization show page, otherwice redirect to login page"""
