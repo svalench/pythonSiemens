@@ -70,7 +70,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         args = self.kwargs['args']
         try:
             cprint('Hi! started function  - ' + args[0]['name'])
-            self.plc1 = PlcRemoteUse(args[0]['ip'], int(args[0]['rack']), int(args[0]['slot']))
+            self._plc1 = PlcRemoteUse(args[0]['ip'], int(args[0]['rack']), int(args[0]['slot']))
             self.started = True
             th.connections[args[1]]['status'] = True
         except:
