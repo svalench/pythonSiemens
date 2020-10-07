@@ -5,3 +5,4 @@ __pycache__
 connections.json
 secoundary_functions/__pycache__
 web/__pycache__
+/myproject.db
