@@ -96,7 +96,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
         """
         try:
-            a = self._plc1.getValue(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
+            a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
             self._c.execute(
                 '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
             self._conn.commit()

@@ -3,8 +3,27 @@ import struct
 import json
 
 class PlcRemoteUse():
+	"""
+	class for connect to PLC Siemens
+	public functions:
+	get_out - read out bit in PLC
+	tear_down - remove connection
+	get_status_all_bit_in_byte - get status bits in byte
+	get_bit - get bit in byte
+	change_bit - change bit in byte (if 0 ->1, if 1->0)
+	set_bit - set bit to hight
+	reset_bit - set bit to low
+	get_data - read data from PLC
+	get_value - read data from PLC with ghost to number
 
+	"""
 	def __init__(self,address,rack,slot):
+		"""
+		:param address: ip plc
+		:param rack: rack plc in hardware
+		:param slot: slot plc in hardware
+		db_read parameter DB in PLC from were read byte
+		"""
 		self.client = snap7.client.Client()  		# формирование обращения к соединению
 		self.client.connect(address, rack,  slot)  	# подключение к контроллеру. Adress - IP адресс. Rack, slot - выставляються/смотрятся в TIA portal
 		self.ves = 0
@@ -12,7 +31,13 @@ class PlcRemoteUse():
 		self.db_read = 3
 		self.db_write = 10
 	
-	def getOut(self,byte,bit):						# метод для получения выхода контроллера
+	def get_out(self, byte, bit):						# метод для получения выхода контроллера
+		"""
+		:param byte: byte address 
+		:param bit: bit address
+		:return: 
+		
+		"""
 		out = self.client.ab_read(int(byte),1)
 		value = int.from_bytes(out[0:1], byteorder='little',signed=True)
 		bits=bin(value)
@@ -27,14 +52,19 @@ class PlcRemoteUse():
 			status=0
 		return status
 
-	def tearDown(self):								# отключение 
+	def tear_down(self):								# отключение
 		self.client.disconnect()
 		self.client.destroy()
 
-	def getSatusAllBitInByte(self,byte): 			# получение байта побитово
+	def get_status_all_bit_in_byte(self, byte): 			# получение байта побитово
+		"""
+		:param byte: address byte
+		:return:
+		 
+		"""
 		byte=int(byte)
-		retVal = self.client.db_read(self.db_read, byte, 1)
-		value = int.from_bytes(retVal[0:1], byteorder='little',signed=True)
+		ret_val = self.client.db_read(self.db_read, byte, 1)
+		value = int.from_bytes(ret_val[0:1], byteorder='little',signed=True)
 		bits=bin(value)
 		bits= bits.replace("0b","")
 		if(len(bits)<8):
@@ -43,21 +73,33 @@ class PlcRemoteUse():
 		bits=bits[::-1]
 		return bits
 
-	def getBit(self,byte,bit):						# получение статуса бита
-		bits = self.getSatusAllBitInByte(byte)
+	def get_bit(self, byte, bit):						# получение статуса бита
+		"""
+		:param byte: address byte in plc 
+		:param bit: address bit in byte
+		:return: 
+		
+		"""
+		bits = self.get_status_all_bit_in_byte(byte)
 		try:
 			status = bits[bit]
 		except:
 			status=0
 		return status
 
-	def changeBit(self,byte,bit):					# реверс бита
+	def change_bit(self, byte, bit):					# реверс бита
+		"""
+		:param byte: address byte in plc 
+		:param bit: address bit in byte
+		:return: 
+		
+		"""
 		byte=int(byte)
 		bit=int(bit)
-		bitsSet = [1,2,4,8,16,32,64,128]
-		bitsReset = [254, 253, 251, 247, 239, 223, 191, 127]
-		retVal = self.client.db_read(self.db_write, byte, 1)
-		value = int.from_bytes(retVal[0:1], byteorder='little')
+		bits_set = [1,2,4,8,16,32,64,128]
+		bits_reset = [254, 253, 251, 247, 239, 223, 191, 127]
+		ret_val = self.client.db_read(self.db_write, byte, 1)
+		value = int.from_bytes(ret_val[0:1], byteorder='little')
 		bits=bin(value)
 		bits= bits.replace("0b","")
 		if(len(bits)<8):
@@ -69,54 +111,81 @@ class PlcRemoteUse():
 		except:
 			status=0
 		if(status!="0"):
-			ret = value & bitsReset[bit]
+			ret = value & bits_reset[bit]
 		else:
-			ret = value | bitsSet[bit]
+			ret = value | bits_set[bit]
 		a = (ret).to_bytes(2, byteorder='little')
 		self.client.db_write(self.db_write, byte, a)
 		return ret
 
-	def setBit(self,byte,bit):				 		# утсановка бита в 1
-		bitsSet = [1,2,4,8,16,32,64,128]
-		retVal = self.client.db_read(self.db_write, byte, 1)
-		value = int.from_bytes(retVal[0:1], byteorder='big')
-		ret = value | bitsSet[bit]
+	def set_bit(self, byte, bit):				 		# утсановка бита в 1
+		"""
+		:param byte: address byte in plc 
+		:param bit: address bit in byte
+		:return: 
+		
+		"""
+		bits_set = [1,2,4,8,16,32,64,128]
+		ret_val = self.client.db_read(self.db_write, byte, 1)
+		value = int.from_bytes(ret_val[0:1], byteorder='big')
+		ret = value | bits_set[bit]
 		a = (ret).to_bytes(2, byteorder='little')
 		self.client.db_write(self.db_write, byte, a)
 
-	def resetBit(self, byte, bit):					# сброс бита в 0
-		bitsReset = [254, 253, 251, 247, 239, 223, 191, 127]
-		retVal = self.client.db_read(self.db_write, byte, 1)
-		value = int.from_bytes(retVal[0:1], byteorder='big')
-		ret = value & bitsReset[bit]
+	def reset_bit(self, byte, bit):					# сброс бита в 0
+		"""
+		:param byte: address byte in plc 
+		:param bit: address bit in byte
+		:return:
+		 
+		"""
+		bits_reset = [254, 253, 251, 247, 239, 223, 191, 127]
+		ret_val = self.client.db_read(self.db_write, byte, 1)
+		value = int.from_bytes(ret_val[0:1], byteorder='big')
+		ret = value & bits_reset[bit]
 		a = (ret).to_bytes(2, byteorder='little')
 		self.client.db_write(self.db_write, byte, a)
 
-	def getdata(self,db_read,startDB,endDB):		# получение данных в байт формате
+	def get_data(self, db_read, startDB, endDB):		# получение данных в байт формате
+		"""
+		:param db_read: DB in PLC from were read data
+		:param startDB: start address in DB
+		:param endDB: offset from startDB
+		:return: 
+		
+		"""
 		try:
-			dataRead = self.client.db_read(db_read, startDB, endDB)
-			return dataRead
+			data_read = self.client.db_read(db_read, startDB, endDB)
+			return data_read
 		except:
 			return False
 
-	def disassembleFloat(self,data):				# метод для преобразования данных в real
+	def disassemble_float(self, data):				# метод для преобразования данных в real
 		val = struct.unpack('>f', data)
 		return val[0]
-	def disassembleDouble(self,data):				# метод для преобразования данных в bigint
+	def disassemble_double(self, data):				# метод для преобразования данных в bigint
 		val = struct.unpack('>d', data)
 		return val[0]
-	def disassembleInt(self,data):					# метод для преобразования данных в int
+	def disassemble_int(self, data):					# метод для преобразования данных в int
 		return int.from_bytes(data, "big")   
 
-	def getValue(self,db_read,startDB,endDB,type):	# получение значения с преобразование к величине
+	def get_value(self, db_read, startDB, endDB, type):	# получение значения с преобразование к величине
+		"""
+		:param db_read: DB in PLC from were read data
+		:param startDB:  start address in DB
+		:param endDB: offset from startDB
+		:param type: type variable (int,real,dint)
+		:return: 
+		
+		"""
 		try:
-			dataRead = self.client.db_read(db_read, startDB, endDB)
+			data_read = self.client.db_read(db_read, startDB, endDB)
 			if(type=='int'):
-				result = self.disassembleInt(dataRead)
+				result = self.disassemble_int(data_read)
 			elif(type=='real'):
-				result = self.disassembleFloat(dataRead)
+				result = self.disassemble_float(data_read)
 			elif(type=='double'):
-				result = self.disassembleInt(dataRead)
+				result = self.disassemble_int(data_read)
 			else:
 				result = 'error type'
 			return result
