@@ -29,7 +29,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
     method stop - stops the flow
     method stopped - checks if the thread is stopped
     method run  - method in which the main function is performed (polling the plc)
-    deleteFromList - method for delete this object from list of objects
+    delete_from_list - method for delete this object from list of objects
     run - main cycle in thread
 
     protected methods:
@@ -54,7 +54,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
     def __del__(self):
         self._allThread.remove(self)
 
-    def deleteFromList(self, obj):
+    def delete_from_list(self, obj):
         self._allThread.remove(obj)
 
     def stop(self):
@@ -125,7 +125,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             for t in MyThread:
                 if (t.stopped()):
                     t.stop()
-                    t.deleteFromList(t)
+                    t.delete_from_list(t)
                     break
                 if self not in MyThread:
                     break
