@@ -113,7 +113,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 main(self.kwargs['args'][1])
             self.stop()
 
-    @property
+
     def run(self):
         """mail loop of thread"""
         args = self.kwargs['args']
@@ -122,13 +122,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._reconnect_to_plc()
         #main cycle
         while True:
-            for t in MyThread:
-                if (t.stopped()):
-                    t.stop()
-                    t.delete_from_list(t)
-                    break
-                if self not in MyThread:
-                    break
+            if self not in MyThread:
+                break
             if self.stopped():
                 return False
             for i in args[0]['data']:
