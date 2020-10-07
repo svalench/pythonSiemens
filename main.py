@@ -5,11 +5,17 @@ from secoundary_functions.supporting import *
 
 
 class Threads:
+    """
+    class for collect threads and connections
+    all_thread  - list for threads
+    connections - list for connections
+
+    """
     def __init__(self):
         self.all_thread = []
         self.connections = []
 
-
+#object for collections threads and connections
 th = Threads()
 
 
