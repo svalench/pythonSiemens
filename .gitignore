@@ -3,3 +3,5 @@
 __pycache__
 /venv/
 connections.json
+secoundary_functions/__pycache__
+web/__pycache__
