@@ -50,7 +50,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._plc1 = None
         self._allThread.append(self)
         self.destroyThread = False
-
+        self.arrayBits = {}
     def __del__(self):
         self._allThread.remove(self)
 
@@ -96,13 +96,23 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
         """
         try:
+            write = True
             if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
             else:
+                if(i['tablename'] not in self.arrayBits ):
+                    self.arrayBits[i['tablename']] = 2
                 a = self._plc1.get_bit(int(i['start']), int(i['offset']), int(i['DB']))
-            self._c.execute(
-                '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
-            self._conn.commit()
+                if(a==self.arrayBits[i['tablename']]):
+                    write = False
+                else:
+                    self.arrayBits[i['tablename']] = a
+                print(a)
+                print(self.arrayBits[i['tablename']])
+            if(write):
+                self._c.execute(
+                    '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
+                self._conn.commit()
         except:
             self._exception = True
 
@@ -133,10 +143,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
-                time.sleep(int(args[0]['reconnect']))
+                time.sleep(float(args[0]['reconnect']))
                 if not self.destroyThread:
                     main(args[1])
                 return False
             else:
                 cprint.info('data returned')
-                time.sleep(int(args[0]['timeout']))
+                time.sleep(float(args[0]['timeout']))

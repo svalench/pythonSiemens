@@ -90,6 +90,7 @@ class PlcRemoteUse():
         if (db == None):
             db = self.db_read
         bits = self.get_status_all_bit_in_byte(byte, db)
+        print(bits)
         try:
             status = bits[bit]
         except:

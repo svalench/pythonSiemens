@@ -2,7 +2,7 @@
 .idea
 __pycache__
 /venv/
-connections.json
+/connections.json
 secoundary_functions/__pycache__
 web/__pycache__
 /myproject.db

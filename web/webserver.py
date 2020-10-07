@@ -134,7 +134,7 @@ def add_connection():
         stop_all_thread()
         return redirect(url_for('start_page'))
 
-    return render_template('add_connection.html')
+    return render_template('addConnection.html')
 
 @app.route('/remove/connection/<int:id>', methods=['GET', 'POST'])
 def remove_connection(id):
@@ -161,7 +161,7 @@ def add_point(id):
         return redirect(url_for('login',error='token is addled'))
     if request.method == 'POST':
         add_to_json(request)
-    return render_template('add_point.html',id=id)
+    return render_template('addPoint.html',id=id)
 
 
 
@@ -182,7 +182,7 @@ def add_to_json(request):
     elif(request.form['type']=='double'):
         offset = 4
     else:
-        offset = 4
+        offset = request.form['bit']
     if(countDataArray!=0):
         jsonData['Data'][int(request.form['id'])].append({"type":request.form['type'],
                             "DB":request.form['DB'],

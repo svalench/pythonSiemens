@@ -32,6 +32,8 @@ def create_coneection_to_plc(jsonDataFile) -> None:
                 vsql = 'REAL'
             if (a['type'] == 'double'):
                 vsql = 'BIGINT'
+            if (a['type'] == 'bool'):
+                vsql = 'int'
             conn = createConnection()
             # создаем табилцы в БД если их нет
             conn.cursor().execute('''CREATE TABLE IF NOT EXISTS ''' + a['tablename'] + ''' \
