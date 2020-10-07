@@ -14,7 +14,6 @@ th = Threads()
 # стартовая функция
 def main(plc="all"):
     jsonDataFile = None
-    global connections
     with open('connections.json') as json_file:
         data = json.load(json_file)
         jsonDataFile = data
