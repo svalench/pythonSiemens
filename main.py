@@ -5,11 +5,13 @@ from secoundary_functions.supporting import *
 
 
 class Threads:
-	def __init__(self):
-		self.all_thread = []
-		self.connections = []
+    def __init__(self):
+        self.all_thread = []
+        self.connections = []
+
 
 th = Threads()
+
 
 # стартовая функция
 def main(plc="all"):
