@@ -50,4 +50,4 @@ def start_thread(data, count):
 
 
 def run_flask():
-    app.run
+    app.run()
