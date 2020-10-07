@@ -5,8 +5,13 @@ from secoundary_functions.mythread import MyThread
 from web.webserver import *
 from main import th
 
-def create_coneection_to_plc(jsonDataFile):
+def create_coneection_to_plc(jsonDataFile) -> None:
+    """
+    :param jsonDataFile:  dict with parameters connection
+    :return: None
+    """
     count = 0
+    # stop all threads
     for i in MyThread:
         try:
             i.destroyThread  =True
@@ -18,7 +23,7 @@ def create_coneection_to_plc(jsonDataFile):
             del (i)
         except:
             cprint.warn('no delete class')
-
+    #try create table in DB
     for i in jsonDataFile['connections']:
         for a in jsonDataFile['Data'][i['data']]:
             if (a['type'] == 'int'):
@@ -33,6 +38,7 @@ def create_coneection_to_plc(jsonDataFile):
 							    (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
 							    value ''' + vsql + ''')''')
             conn.commit()
+        # try add points to dict connection
         try:
             i['data'] = jsonDataFile['Data'][i['data']]
         except:
@@ -44,10 +50,19 @@ def create_coneection_to_plc(jsonDataFile):
 
 
 def start_thread(data, count):
+    """
+    :param data: dict with parameters connection
+    :param count: number of thread
+    :return:
+
+    """
     t = MyThread(args=[data, count])
     th.all_thread.append(t)
     t.start()
 
 
 def run_flask():
+    """ run flask in other thread
+    :return:
+    """
     app.run()
