@@ -29,7 +29,7 @@ def main(plc="all"):
             jsonDataFile['connections'][plc]['data'] = jsonDataFile['Data'][jsonDataFile['connections'][plc]['data']]
             start_thread(jsonDataFile['connections'][plc], plc)
         except:
-            pass
+            cprint.err('Error start thread', interrupt=False)
         cprint.err('Oops, somthing wrong! reconected to  - ' + th.connections[plc]['name'], interrupt=False)
 
 
