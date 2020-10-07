@@ -107,8 +107,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
                     write = False
                 else:
                     self.arrayBits[i['tablename']] = a
-                print(a)
-                print(self.arrayBits[i['tablename']])
             if(write):
                 self._c.execute(
                     '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
