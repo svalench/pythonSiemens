@@ -88,7 +88,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
     def _write_data_to_db(self, i):
-        """write data to DB from PLC, i - dict with parametrs
+        """write data to DB from PLC, i - dict with parameters
         DB - DB block in PLC
         start - offset in DB
         offset - offset from start
@@ -96,10 +96,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
         """
         try:
-            if(i['type']!='bool'):
+            if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
             else:
-                a = self._plc1.get_bit(int(i['start']), int(i['offset']),int(i['DB']))
+                a = self._plc1.get_bit(int(i['start']), int(i['offset']), int(i['DB']))
             self._c.execute(
                 '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
             self._conn.commit()
@@ -116,14 +116,13 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 main(self.kwargs['args'][1])
             self.stop()
 
-
     def run(self):
         """mail loop of thread"""
         args = self.kwargs['args']
         self._try_connect_to_plc()
         self._try_to_connect_db()
         self._reconnect_to_plc()
-        #main cycle
+        # main cycle
         while True:
             if self not in MyThread:
                 break
