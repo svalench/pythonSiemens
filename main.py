@@ -1,4 +1,6 @@
+import logging
 import threading
+
 import json
 from cprint import *
 from secoundary_functions.supporting import *
@@ -44,5 +46,12 @@ def main(plc="all"):
 
 
 if __name__ == "__main__":
+    log = logging.getLogger("main")
+    log.setLevel(logging.INFO)
+    fh = logging.FileHandler("log_info.log")
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    log.addHandler(fh)
+    log.info("Program started")
     threading.Thread(target=run_flask).start()
     main()

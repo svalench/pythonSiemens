@@ -6,3 +6,5 @@ __pycache__
 secoundary_functions/__pycache__
 web/__pycache__
 /myproject.db
+/logs_main.log
+/log_info.log

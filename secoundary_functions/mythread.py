@@ -1,12 +1,13 @@
 import threading
 import time
-
+import logging
 from secoundary_functions.module_siemens import PlcRemoteUse
 from secoundary_functions.supporting import *
 from cprint import *
 from main import main
 from main import th
 
+module_logger = logging.getLogger("main.thread_log")
 
 class IterThread(type):
     def __iter__(cls):
@@ -51,6 +52,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._allThread.append(self)
         self.destroyThread = False
         self.arrayBits = {}
+        self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
     def __del__(self):
         self._allThread.remove(self)
 
@@ -117,14 +119,17 @@ class MyThread(threading.Thread, metaclass=IterThread):
     def _reconnect_to_plc(self):
         """if connection with  PLC  not established stop this tread and create new"""
         if (not self.started):
+            self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + " by no connection to plc")
             cprint.warn('error conection to plc ' + str(self.kwargs['args'][0]['name']) + " count - " + str(
                 self.kwargs['args'][1]))
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
             if not self.destroyThread:
+                self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
             self.stop()
 
     def run(self):
+        self.log.info('start thread ' + str(self.kwargs['args'][0]['name']))
         """mail loop of thread"""
         args = self.kwargs['args']
         self._try_connect_to_plc()
@@ -133,6 +138,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         # main cycle
         while True:
             if self not in MyThread:
+                log.warning('stop thread '+ str(self.kwargs['args'][0]['name']) + "by stop mode")
                 break
             if self.stopped():
                 return False
@@ -141,6 +147,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
+                log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by error get value")
                 time.sleep(float(args[0]['reconnect']))
                 if not self.destroyThread:
                     main(args[1])
