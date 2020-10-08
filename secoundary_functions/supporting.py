@@ -27,6 +27,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
         try:
             del (i)
         except:
+            log.warning('no delete class')
             cprint.warn('no delete class')
     # try create table in DB
     for i in jsonDataFile['connections']:
@@ -48,6 +49,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
         # try add points to dict connection
         try:
             i['data'] = jsonDataFile['Data'][i['data']]
+            log.info('try to read data')
         except:
             log.warning('no data for read in connection')
             cprint.warn('no data for read in connection')
