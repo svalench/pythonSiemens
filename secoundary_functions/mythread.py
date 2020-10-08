@@ -88,6 +88,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._conn = createConnection()
             self._c = self._conn.cursor()
         except:
+            self.log.warning('error connection to DB for ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
     def _write_data_to_db(self, i):
@@ -147,7 +148,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
-                log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by error get value")
+                self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by error get value")
                 time.sleep(float(args[0]['reconnect']))
                 if not self.destroyThread:
                     main(args[1])
