@@ -61,6 +61,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
     def stop(self):
         """stop this thread"""
+        self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by stop mode")
         self._stop.set()
 
     def stopped(self):
@@ -138,7 +139,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
         # main cycle
         while True:
             if self not in MyThread:
-                log.warning('stop thread '+ str(self.kwargs['args'][0]['name']) + "by stop mode")
                 break
             if self.stopped():
                 return False
