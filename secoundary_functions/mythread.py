@@ -79,6 +79,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         except:
             self.started = False
             th.connections[args[1]]['status'] = False
+            self.log.warning('error connection, try reconnection. Reconnect from ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 

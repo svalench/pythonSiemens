@@ -1,10 +1,13 @@
+import logging
+
 from cprint import *
 from settings import *
 from secoundary_functions.mythread import MyThread
 from web.webserver import *
 from main import th
 
-
+module_logger = logging.getLogger("main.support")
+log = logging.getLogger("main.support")
 def create_coneection_to_plc(jsonDataFile) -> None:
     """
     :param jsonDataFile:  dict with parameters connection
@@ -17,7 +20,9 @@ def create_coneection_to_plc(jsonDataFile) -> None:
             i.destroyThread = True
             i.stop()
             cprint.info('thread stoped')
+            log.info('stop thread')
         except:
+            log.warning('no stop thread')
             cprint.warn('no stop thread')
         try:
             del (i)
@@ -44,6 +49,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
         try:
             i['data'] = jsonDataFile['Data'][i['data']]
         except:
+            log.warning('no data for read in connection')
             cprint.warn('no data for read in connection')
         th.connections.append(i)
         # запускаем поток для каждого описанного в settings подключкения
