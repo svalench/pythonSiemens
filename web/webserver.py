@@ -1,17 +1,19 @@
-from flask import Flask, session, redirect, url_for, escape, request,render_template
-from settings import SECRET,USERNAME,PASSWORD,TOKEN,connections,all_thread
+from flask import Flask, session, redirect, url_for, escape, request, render_template
+from settings import SECRET, USERNAME, PASSWORD, TOKEN, connections, all_thread
 import random
 import string
 import socket
 import platform
 import psutil
-from datetime import datetime 
+from datetime import datetime
 import json
-from main import main,th
+from main import main, th
 from cprint import *
 from secoundary_functions.mythread import MyThread
+
 TOKS = 'a'
-app = Flask('opc',static_url_path='',static_folder='web/static',template_folder='web/templates')
+app = Flask('opc', static_url_path='', static_folder='web/static', template_folder='web/templates')
+
 
 @app.route('/', methods=['GET', 'POST'])
 def start_page():
@@ -23,28 +25,28 @@ def start_page():
     from main import th
     """if user autorization show page, otherwice redirect to login page"""
     if 'username' not in session:
-        return redirect(url_for('login',error='loggined'))
+        return redirect(url_for('login', error='loggined'))
     if if_autorize():
-        return redirect(url_for('login',error='token is addled'))
+        return redirect(url_for('login', error='token is addled'))
     json_data = None
     """read data about all our connections"""
     with open('connections.json') as json_file:
         data = json.load(json_file)
         json_data = data
-    #get data boot time
+    # get data boot time
     boot_time_timestamp = psutil.boot_time()
     bt = datetime.fromtimestamp(boot_time_timestamp)
-    #get hostname
+    # get hostname
     hostname = socket.gethostname()
-    #get ip pc
+    # get ip pc
     IPAddr = socket.gethostbyname(hostname)
-    #get type OS
+    # get type OS
     uname = platform.uname()
-    #get data about virtual memory
+    # get data about virtual memory
     svmem = psutil.virtual_memory()
-    #get data about part
+    # get data about part
     partitions = psutil.disk_partitions()
-    #getting data about network connections
+    # getting data about network connections
     if_addrs = psutil.net_if_addrs()
     net_io = psutil.net_io_counters()
     addresses = []
@@ -64,70 +66,74 @@ def start_page():
                 addresses.append(a)
     partition_usage = psutil.disk_usage(partitions[0].mountpoint)
     name = session['username']
-    obj = 	{'username':name,
-            'about':{	'IP':IPAddr,
-                        'host':hostname,
-                        'system':uname.system,
-                        'relaese':uname.release,
-                        'version':uname.version,
-                        'machine':uname.machine,
-                        'processor':uname.processor,
-                        'phisical_cpu':psutil.cpu_count(logical=False),
-                        'total_cpu': psutil.cpu_count(logical=True),
-                        'cpu_persent':psutil.cpu_percent(),
-                        'mem_used':svmem.used,
-                        'mem_total':svmem.total,
-                        'mem_percent':svmem.percent,
-                        'part_used':partition_usage.used,
-                        'part_total':partition_usage.total,
-                        'part_procent':partition_usage.percent,
-                        'net':addresses,
-                        'net_io':net_io,
-                    }
-            }
-    return render_template('start.html',res=obj,bt=bt,data=json_data,connections=th.connections)
+    obj = {'username': name,
+           'about': {'IP': IPAddr,
+                     'host': hostname,
+                     'system': uname.system,
+                     'relaese': uname.release,
+                     'version': uname.version,
+                     'machine': uname.machine,
+                     'processor': uname.processor,
+                     'phisical_cpu': psutil.cpu_count(logical=False),
+                     'total_cpu': psutil.cpu_count(logical=True),
+                     'cpu_persent': psutil.cpu_percent(),
+                     'mem_used': svmem.used,
+                     'mem_total': svmem.total,
+                     'mem_percent': svmem.percent,
+                     'part_used': partition_usage.used,
+                     'part_total': partition_usage.total,
+                     'part_procent': partition_usage.percent,
+                     'net': addresses,
+                     'net_io': net_io,
+                     }
+           }
+    return render_template('start.html', res=obj, bt=bt, data=json_data, connections=th.connections)
+
 
 @app.route('/login/<error>', methods=['GET', 'POST'])
 def login(error):
     """def fot login users"""
     global TOKS
     if request.method == 'POST':
-        if(request.form['username']==USERNAME):
-            if(request.form['password']==PASSWORD):
+        if (request.form['username'] == USERNAME):
+            if (request.form['password'] == PASSWORD):
                 session['username'] = request.form['username']
-                #generate token for user
+                # generate token for user
                 TOKS = get_random_string(12)
                 session['token'] = TOKS
                 return redirect(url_for('start_page'))
         else:
-            return redirect(url_for('login',error='invalid login or pass'))
-    return render_template('login.html',error=error)
+            return redirect(url_for('login', error='invalid login or pass'))
+    return render_template('login.html', error=error)
+
+
 app.secret_key = SECRET
 
 
 @app.route('/login')
 def red_to_login():
-    return redirect(url_for('login',error='loggined'))
+    return redirect(url_for('login', error='loggined'))
+
 
 @app.route('/add/connection', methods=['GET', 'POST'])
 def add_connection():
     """function for add connection to file"""
     if if_autorize():
-        return redirect(url_for('login',error='token is addled'))
+        return redirect(url_for('login', error='token is addled'))
     if request.method == 'POST':
         json_data = None
         with open('connections.json') as json_file:
             data = json.load(json_file)
             json_data = data
         countDataArray = len(json_data['Data'])
-        json_data['connections'].append({"name":request.form['name'],
-                                        "ip":request.form['ip'],
-                                        "rack":request.form['rack'],
-                                        "slot":request.form['slot'],
-                                        "data":countDataArray,
-                                        "timeout":request.form['timeout'],
-                                        "reconnect":request.form['reconnect'],
-                                        "plc":request.form['plc']})
+        json_data['connections'].append({"name": request.form['name'],
+                                         "ip": request.form['ip'],
+                                         "rack": request.form['rack'],
+                                         "slot": request.form['slot'],
+                                         "data": countDataArray,
+                                         "timeout": request.form['timeout'],
+                                         "reconnect": request.form['reconnect'],
+                                         "plc": request.form['plc']})
         json_data['Data'].append([])
         with open('connections.json', 'w') as outfile:
             json.dump(json_data, outfile)
@@ -136,16 +142,17 @@ def add_connection():
 
     return render_template('addConnection.html')
 
+
 @app.route('/remove/connection/<int:id>', methods=['GET', 'POST'])
 def remove_connection(id):
     """function for remove connection from file"""
     if if_autorize():
-        return redirect(url_for('login',error='token is addled'))
+        return redirect(url_for('login', error='token is addled'))
     json_data = None
     with open('connections.json') as json_file:
         data = json.load(json_file)
         json_data = data
-    json_data['Data'][int(json_data['connections'][id]['data'])]=[]
+    json_data['Data'][int(json_data['connections'][id]['data'])] = []
     del json_data['connections'][id]
     with open('connections.json', 'w') as outfile:
         json.dump(json_data, outfile)
@@ -153,19 +160,14 @@ def remove_connection(id):
     return redirect(url_for('start_page'))
 
 
-
 @app.route('/add/point/<int:id>', methods=['GET', 'POST'])
 def add_point(id):
     """function for add point in file for connection with id"""
     if if_autorize():
-        return redirect(url_for('login',error='token is addled'))
+        return redirect(url_for('login', error='token is addled'))
     if request.method == 'POST':
         add_to_json(request)
-    return render_template('addPoint.html',id=id)
-
-
-
-
+    return render_template('addPoint.html', id=id)
 
 
 def add_to_json(request):
@@ -175,26 +177,26 @@ def add_to_json(request):
         data = json.load(json_file)
         jsonData = data
     countDataArray = len(jsonData['Data'])
-    if(request.form['type']=='int'):
+    if (request.form['type'] == 'int'):
         offset = 2
-    elif(request.form['type']=='real'):
+    elif (request.form['type'] == 'real'):
         offset = 4
-    elif(request.form['type']=='double'):
+    elif (request.form['type'] == 'double'):
         offset = 4
     else:
         offset = request.form['bit']
-    if(countDataArray!=0):
-        jsonData['Data'][int(request.form['id'])].append({"type":request.form['type'],
-                            "DB":request.form['DB'],
-                            "start":request.form['start'],
-                            "offset":offset,
-                            "tablename":request.form['tablename']})
+    if (countDataArray != 0):
+        jsonData['Data'][int(request.form['id'])].append({"type": request.form['type'],
+                                                          "DB": request.form['DB'],
+                                                          "start": request.form['start'],
+                                                          "offset": offset,
+                                                          "tablename": request.form['tablename']})
     else:
-        jsonData['Data'].append([{"type":request.form['type'],
-                            "DB":request.form['DB'],
-                            "start":request.form['start'],
-                            "offset":offset,
-                            "tablename":request.form['tablename']}])
+        jsonData['Data'].append([{"type": request.form['type'],
+                                  "DB": request.form['DB'],
+                                  "start": request.form['start'],
+                                  "offset": offset,
+                                  "tablename": request.form['tablename']}])
     with open('connections.json', 'w') as outfile:
         json.dump(jsonData, outfile)
     stop_all_thread()
@@ -205,8 +207,9 @@ def stop_all_thread():
     cprint.warn('---------------stop ALL thread-----------------')
     main()
 
+
 def if_autorize():
-    if(session['token'] != TOKS):
+    if (session['token'] != TOKS):
         return True
     else:
         return False
