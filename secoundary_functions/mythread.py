@@ -20,6 +20,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
     public property:
     started - property keeps track of whether the connection to the plc has occurred, default False
     destroyThread - this property check for stop restart, default False
+    arrayBits - this array with all bits in thread
+    log - log object
 
     protected property:
     _stop - inherits from the parent the thread stop event
