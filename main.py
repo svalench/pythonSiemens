@@ -1,6 +1,6 @@
 import logging
 import threading
-
+import os.path
 import json
 from cprint import *
 from secoundary_functions.supporting import *
@@ -41,6 +41,7 @@ def main(plc="all"):
             jsonDataFile['connections'][plc]['data'] = jsonDataFile['Data'][jsonDataFile['connections'][plc]['data']]
             start_thread(jsonDataFile['connections'][plc], plc)
         except:
+            log.warning("Error start thread")
             cprint.err('Error start thread', interrupt=False)
         cprint.err('Oops, somthing wrong! reconected to  - ' + th.connections[plc]['name'], interrupt=False)
 
@@ -53,5 +54,15 @@ if __name__ == "__main__":
     fh.setFormatter(formatter)
     log.addHandler(fh)
     log.info("Program started")
+    check_file = os.path.exists('connections.json')
+    if (not check_file):
+        log.warning("file connections.json not created")
+        to_file = {"connections": [], 'Data': []}
+        try:
+            with open('connections.json', 'w+') as outfile:
+                json.dump(to_file, outfile)
+            log.info("connections.json created")
+        except:
+            log.error("Not created json file")
     threading.Thread(target=run_flask).start()
     main()
