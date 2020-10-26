@@ -19,7 +19,7 @@ class PlcRemoteUse():
 
     """
 
-    def __init__(self, address, rack, slot,tcpport=102):
+    def __init__(self, address, rack, slot, port=102):
         """
         :param address: ip plc
         :param rack: rack plc in hardware
@@ -28,7 +28,7 @@ class PlcRemoteUse():
         """
         self.client = snap7.client.Client()  # формирование обращения к соединению
         self.client.connect(address, rack,
-                            slot)  # подключение к контроллеру. Adress - IP адресс. Rack, slot - выставляються/смотрятся в TIA portal
+                            slot, tcpport=port)  # подключение к контроллеру. Adress - IP адресс. Rack, slot - выставляються/смотрятся в TIA portal
         self.ves = 0
         self.dataRead = 0
         self.db_read = 3

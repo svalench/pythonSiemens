@@ -1,6 +1,9 @@
 import threading
 import time
 import logging
+
+import cprint as cprint
+
 from secoundary_functions.module_siemens import PlcRemoteUse
 from secoundary_functions.supporting import *
 from cprint import *
@@ -8,6 +11,7 @@ from main import main
 from main import th
 
 module_logger = logging.getLogger("main.thread_log")
+
 
 class IterThread(type):
     def __iter__(cls):
@@ -55,6 +59,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.destroyThread = False
         self.arrayBits = {}
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
+
     def __del__(self):
         self._allThread.remove(self)
 
@@ -74,14 +79,20 @@ class MyThread(threading.Thread, metaclass=IterThread):
         """connected to PLC"""
         args = self.kwargs['args']
         try:
+            if ('port' in args[0]):
+                port = int(args[0]['port'])
+            else:
+                port = 102
             cprint('Hi! started function  - ' + args[0]['name'])
-            self._plc1 = PlcRemoteUse(args[0]['ip'], int(args[0]['rack']), int(args[0]['slot']))
+            self._plc1 = PlcRemoteUse(address=args[0]['ip'], rack=int(args[0]['rack']),
+                                      slot=int(args[0]['slot']), port=port)
             self.started = True
             th.connections[args[1]]['status'] = True
         except:
             self.started = False
             th.connections[args[1]]['status'] = False
-            self.log.warning('error connection, try reconnection. Reconnect from ' + str(self.kwargs['args'][0]['name']))
+            self.log.warning(
+                'error connection, try reconnection. Reconnect from ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
@@ -107,14 +118,14 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
             else:
-                if(i['tablename'] not in self.arrayBits ):
+                if (i['tablename'] not in self.arrayBits):
                     self.arrayBits[i['tablename']] = 2
                 a = self._plc1.get_bit(int(i['start']), int(i['offset']), int(i['DB']))
-                if(a==self.arrayBits[i['tablename']]):
+                if (a == self.arrayBits[i['tablename']]):
                     write = False
                 else:
                     self.arrayBits[i['tablename']] = a
-            if(write):
+            if (write):
                 self._c.execute(
                     '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
                 self._conn.commit()
