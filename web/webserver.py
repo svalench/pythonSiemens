@@ -127,8 +127,15 @@ def add_connection():
             data = json.load(json_file)
             json_data = data
         countDataArray = len(json_data['Data'])
+        try:
+            ip = request.form['ip'].split(':')[0]
+            port = request.form['ip'].split(':')[1]
+        except:
+            ip = request.form['ip']
+            port = 102
         json_data['connections'].append({"name": request.form['name'],
-                                         "ip": request.form['ip'],
+                                         "ip": ip,
+                                         "port": port,
                                          "rack": request.form['rack'],
                                          "slot": request.form['slot'],
                                          "data": countDataArray,
@@ -170,12 +177,12 @@ def add_point(id):
         add_to_json(request)
     return render_template('addPoint.html', id=id)
 
+
 @app.route('/data/point/<int:id>', methods=['GET', 'POST'])
 def get_data_from_esp(id):
     if request.method == 'POST':
         print(request.form)
-    return jsonify({"success":True})
-
+    return jsonify({"success": True})
 
 
 def add_to_json(request):
