@@ -7,6 +7,7 @@ import platform
 import psutil
 from datetime import datetime
 import json
+from flask import jsonify
 from main import main, th
 from cprint import *
 from secoundary_functions.mythread import MyThread
@@ -168,6 +169,13 @@ def add_point(id):
     if request.method == 'POST':
         add_to_json(request)
     return render_template('addPoint.html', id=id)
+
+@app.route('/data/point/<int:id>', methods=['GET', 'POST'])
+def get_data_from_esp(id):
+    if request.method == 'POST':
+        print(request.form)
+    return jsonify({"success":True})
+
 
 
 def add_to_json(request):

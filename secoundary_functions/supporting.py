@@ -75,4 +75,4 @@ def run_flask():
     """ run flask in other thread
     :return:
     """
-    app.run()
+    app.run(host='0.0.0.0')
