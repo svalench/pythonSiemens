@@ -19,7 +19,7 @@ class PlcRemoteUse():
 
     """
 
-    def __init__(self, address, rack, slot):
+    def __init__(self, address, rack, slot,tcpport=102):
         """
         :param address: ip plc
         :param rack: rack plc in hardware
