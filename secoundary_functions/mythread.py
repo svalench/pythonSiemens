@@ -61,17 +61,17 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
 
     def __del__(self):
-        self._c.close()
+        self._conn.close()
         self._allThread.remove(self)
 
     def delete_from_list(self, obj):
-        self._c.close()
+        self._conn.close()
         self._allThread.remove(obj)
 
     def stop(self):
         """stop this thread"""
         self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by stop mode")
-        self._c.close()
+        self._conn.close()
         self._stop.set()
 
     def stopped(self):
@@ -133,7 +133,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                     '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
                 self._conn.commit()
         except:
-            self._c.close()
+            self._conn.close()
             self._exception = True
 
     def _reconnect_to_plc(self):
