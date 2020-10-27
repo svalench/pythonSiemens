@@ -105,6 +105,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._conn = createConnection()
             self._c = self._conn.cursor()
         except:
+            self._c.close()
             self.log.warning('error connection to DB for ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
@@ -133,6 +134,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                     '''INSERT INTO  ''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
                 self._conn.commit()
         except:
+            self._c.close()
             self._exception = True
 
     def _reconnect_to_plc(self):
@@ -143,6 +145,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 self.kwargs['args'][1]))
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
             if not self.destroyThread:
+                self._c.close()
                 self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
             self.stop()
