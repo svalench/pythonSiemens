@@ -105,7 +105,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._conn = createConnection()
             self._c = self._conn.cursor()
         except:
-            self._c.close()
             self.log.warning('error connection to DB for ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
