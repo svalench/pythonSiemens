@@ -145,6 +145,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
             if not self.destroyThread:
                 self._c.close()
+                self._conn.close()
                 self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
             self._plc1.tear_down()
