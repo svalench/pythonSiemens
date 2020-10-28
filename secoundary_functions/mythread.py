@@ -1,7 +1,7 @@
 import threading
 import time
 import logging
-
+from snap7.snap7exceptions import Snap7Exception
 import cprint as cprint
 
 from secoundary_functions.module_siemens import PlcRemoteUse
@@ -61,6 +61,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
 
     def __del__(self):
+        self._plc1.tear_down()
         self._conn.close()
         self._allThread.remove(self)
 
@@ -86,16 +87,15 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 port = int(args[0]['port'])
             else:
                 port = 102
-            cprint('Hi! started function  - ' + args[0]['name'])
             self._plc1 = PlcRemoteUse(address=args[0]['ip'], rack=int(args[0]['rack']),
                                       slot=int(args[0]['slot']), port=port)
             self.started = True
             th.connections[args[1]]['status'] = True
-        except:
+        except Snap7Exception as e:
             self.started = False
             th.connections[args[1]]['status'] = False
             self.log.warning(
-                'error connection, try reconnection. Reconnect from ' + str(self.kwargs['args'][0]['name']))
+                'error connection, try reconnect. Reconnect from ' + str(self.kwargs['args'][0]['name'])+ " error : " +str(e))
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
@@ -147,6 +147,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 self._c.close()
                 self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
+            self._plc1.tear_down()
             self.stop()
 
     def run(self):
