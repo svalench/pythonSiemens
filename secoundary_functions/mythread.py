@@ -166,7 +166,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 return False
             for i in args[0]['data']:
                 threading.Thread(target=self._write_data_to_db,kwargs={'i':i}).start()
-                time.sleep(0.01)
+                time.sleep(0.1)
                 #self._write_data_to_db(i)
             if (self._exception):
                 th.connections[args[1]]['status'] = False
