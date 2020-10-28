@@ -108,7 +108,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.log.warning('error connection to DB for ' + str(self.kwargs['args'][0]['name']))
             cprint.err('error connection to DB for ' + str(self.kwargs['args'][0]['name']), interrupt=False)
 
-    async def _write_data_to_db(self, i):
+    def _write_data_to_db(self, i):
         """write data to DB from PLC, i - dict with parameters
         DB - DB block in PLC
         start - offset in DB
