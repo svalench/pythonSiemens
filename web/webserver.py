@@ -205,10 +205,8 @@ def add_to_json(request):
     else:
         offset = request.form['bit']
     arr = []
-    print(request.form)
     if (request.form['type'] == 'area'):
         for i in range(1,int(request.form['countVar'])+1):
-            print(i)
             tt = 'type_{}'.format(i)
             if (request.form[tt] == 'int'):
                 offset1 = 2
@@ -225,7 +223,6 @@ def add_to_json(request):
                 'start': request.form[key1],
                 'offset': offset1
             })
-            print(request.form[key1])
     if (countDataArray != 0):
         jsonData['Data'][int(request.form['id'])].append({"type": request.form['type'],
                                                           "DB": request.form['DB'],
