@@ -11,24 +11,25 @@
 <div class="container">
 <form action="/add/point/{{id}}" method="POST">
   <input type="number" name="id" value="{{id}}" hidden>
-	<div class="form-group">
+	<div id="blockTablename" class="form-group">
     <label for="tablename">Name Table</label>
     <input type="text" class="form-control" id="tablename" name="tablename" >
   </div>
-   <div class="form-group">
+   <div id="typeValriable" class="form-group">
     <label for="type">Type</label>
     <select class="form-control" id="type" name="type">
       <option value="int">Intager</option>
       <option value="real">Real</option>
       <option value="double">Double Intager</option>
         <option value="bool">Boolean</option>
+       <option value="area">Area DB</option>
     </select>
   </div>
   <div class="form-group">
     <label for="DB">DB</label>
     <input type="number" step="1" class="form-control" id="DB" name="DB" >
   </div>
-  <div class="form-group">
+  <div id="startAddress" class="form-group">
     <label id="startA" for="start">start address in db</label>
     <input  type="number" step="1" class="form-control" id="start" name="start" >
   </div>
@@ -36,6 +37,18 @@
     <div id="blockBit" class="form-group" hidden>
     <label id="bitLable" for="bit">Bit in byte</label>
     <input  type="number" step="1" class="form-control" id="bit" name="bit" >
+  </div>
+
+      <div id="endAddress" class="form-group" hidden>
+    <label id="endAddressLable" for="endAddressInput">end address</label>
+    <input  type="number" step="1" class="form-control" id="endAddressInput" name="endAddress" >
+  </div>
+    <div id="countVar" class="form-group" hidden>
+    <label id="countVarLable" for="countVarInput">counts Variable</label>
+    <input  type="number" step="1" class="form-control" id="countVarInput" value="0" name="countVar" >
+  </div>
+  <div id="palitra">
+
   </div>
 
   <button type="success" class="btn btn-success">Save</button>
@@ -47,16 +60,68 @@
 </body>
 
 <script>
+var palitra = document.getElementById('palitra');
+  var tablename = document.getElementById('blockTablename');
   var select =  document.getElementById('type');
   var lable =  document.getElementById('startA');
   var block =  document.getElementById('blockBit');
+   var blockDB =  document.getElementById('endAddress');
+   var countVar =  document.getElementById('countVar');
   select.onchange = function(e){
     if(this.value=="bool"){
-    lable.textContent = 'byte in db';
-    block.removeAttribute('hidden');
+        lable.textContent = 'byte in db';
+        block.removeAttribute('hidden');
+        tablename.removeAttribute('hidden');
+        blockDB.setAttribute('hidden',true);
+        countVar.setAttribute('hidden',true);
+    }else if(this.value=="area"){
+        lable.textContent = 'start address in db';
+        blockDB.removeAttribute('hidden');
+        countVar.removeAttribute('hidden');
+        tablename.setAttribute('hidden',true);
+        tablename.getElementsByTagName("input")[0].value = '';
     }else{
-    lable.textContent = 'start address in db';
-    block.setAttribute('hidden',true);
+        lable.textContent = 'start address in db';
+        block.setAttribute('hidden',true);
+        blockDB.setAttribute('hidden',true);
+        tablename.removeAttribute('hidden');
+        countVar.setAttribute('hidden',true);
+    }
+  };
+  countVar.getElementsByTagName("input")[0].onchange = function(e){
+    document.getElementById('palitra').innerHTML = "";
+    for(i=1;i<=parseInt(this.value);i++){
+    let input =  document.createElement('input');
+    input.name = 'tablename_'+i;
+    input.classList.add('col-sm');
+
+    let start1 =  document.getElementById('startAddress');
+    let start = start1.cloneNode(true);
+    start.id = 'start_ad_'+i;
+    start.getElementsByTagName("input")[0].id = "start_offset_in_data_"+i;
+    start.getElementsByTagName("input")[0].name = "start_offset_in_data_"+i;
+    start.classList.add('col-sm');
+
+    let typevar1 = document.getElementById('typeValriable');
+    let typevar = typevar1.cloneNode(true);
+    typevar.id = 'typevar_'+i;
+    typevar.getElementsByTagName("select")[0].id = "type_"+i;
+    typevar.getElementsByTagName("select")[0].name = "type_"+i;
+    typevar.getElementsByTagName("select")[0].remove(4);
+    typevar.classList.add('col-sm');
+
+    let lable = document.createElement('lable');
+    lable.innerHTML = 'write the tablename, start address and type';
+
+
+    let div = document.createElement('div');
+    div.classList.add('form-group');
+    div.classList.add('row');
+    div.appendChild(lable);
+    div.appendChild(input);
+    div.appendChild(typevar);
+    div.appendChild(start);
+    palitra.appendChild(div);
     }
   };
 </script>

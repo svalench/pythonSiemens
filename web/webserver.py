@@ -191,6 +191,7 @@ def add_to_json(request):
     with open('connections.json') as json_file:
         data = json.load(json_file)
         jsonData = data
+    tablename = request.form['tablename']
     countDataArray = len(jsonData['Data'])
     if (request.form['type'] == 'int'):
         offset = 2
@@ -198,20 +199,47 @@ def add_to_json(request):
         offset = 4
     elif (request.form['type'] == 'double'):
         offset = 4
+    elif (request.form['type'] == 'area'):
+        offset = request.form['endAddress']
+        tablename = 'notable'
     else:
         offset = request.form['bit']
+    arr = []
+    print(request.form)
+    if (request.form['type'] == 'area'):
+        for i in range(1,int(request.form['countVar'])+1):
+            print(i)
+            tt = 'type_{}'.format(i)
+            if (request.form[tt] == 'int'):
+                offset1 = 2
+            elif (request.form[tt] == 'real'):
+                offset1 = 4
+            elif (request.form[tt] == 'double'):
+                offset1 = 4
+            else:
+                offset1 = 2
+            key = 'tablename_{}'.format(i)
+            key1 = 'start_offset_in_data_{}'.format(i)
+            arr.append({
+                "tablename": request.form[key],
+                'start': request.form[key1],
+                'offset': offset1
+            })
+            print(request.form[key1])
     if (countDataArray != 0):
         jsonData['Data'][int(request.form['id'])].append({"type": request.form['type'],
                                                           "DB": request.form['DB'],
                                                           "start": request.form['start'],
                                                           "offset": offset,
-                                                          "tablename": request.form['tablename']})
+                                                          "tablename": tablename,
+                                                          'arr':arr})
     else:
         jsonData['Data'].append([{"type": request.form['type'],
                                   "DB": request.form['DB'],
                                   "start": request.form['start'],
                                   "offset": offset,
-                                  "tablename": request.form['tablename']}])
+                                  "tablename": tablename,
+                                  'arr':arr}])
     with open('connections.json', 'w') as outfile:
         json.dump(jsonData, outfile)
     stop_all_thread()
