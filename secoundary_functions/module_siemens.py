@@ -181,7 +181,7 @@ class PlcRemoteUse():
     def disassemble_int(self, data):  # метод для преобразования данных в int
         return int.from_bytes(data, "big")
 
-    def get_value(self, db_read, startDB, endDB, type):  # получение значения с преобразование к величине
+    async def get_value(self, db_read, startDB, endDB, type):  # получение значения с преобразование к величине
         """
         :param db_read: DB in PLC from were read data
         :param startDB:  start address in DB
@@ -191,7 +191,7 @@ class PlcRemoteUse():
 
         """
         try:
-            data_read = self.client.db_read(db_read, startDB, endDB)
+            data_read = await self.client.as_db_read(db_read, startDB, endDB)
             if (type == 'int'):
                 result = self.disassemble_int(data_read)
             elif (type == 'real'):
