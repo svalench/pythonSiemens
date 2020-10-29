@@ -165,8 +165,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if self.stopped():
                 return False
             for i in args[0]['data']:
-                #threading.Thread(target=self._write_data_to_db,kwargs={'i':i}).start()
-                self._write_data_to_db(i)
+                threading.Thread(target=self._write_data_to_db,kwargs={'i':i}).start()
+                #self._write_data_to_db(i)
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
