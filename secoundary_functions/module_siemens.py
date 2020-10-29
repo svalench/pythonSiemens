@@ -191,7 +191,7 @@ class PlcRemoteUse():
 
         """
         try:
-            data_read = self.client.as_db_read(db_read, startDB, endDB)
+            data_read = self.client.db_read(db_read, startDB, endDB)
             if (type == 'int'):
                 result = self.disassemble_int(data_read)
             elif (type == 'real'):
