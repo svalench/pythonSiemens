@@ -181,6 +181,18 @@ class PlcRemoteUse():
     def disassemble_int(self, data):  # метод для преобразования данных в int
         return int.from_bytes(data, "big")
 
+    def transform_data_to_value(self,start,offset,data,type):
+        end = int(start)+int(offset)
+        if (type == 'int'):
+            result = self.disassemble_int(data[int(start):int(end)])
+        elif (type == 'real'):
+            result = self.disassemble_float(data[int(start):int(end)])
+        elif (type == 'double'):
+            result = self.disassemble_int(data[int(start):int(end)])
+        else:
+            result = 'error type'
+        return result
+
     def get_value(self, db_read, startDB, endDB, type):  # получение значения с преобразование к величине
         """
         :param db_read: DB in PLC from were read data
@@ -191,7 +203,7 @@ class PlcRemoteUse():
 
         """
         try:
-            data_read = self.client.as_db_read(db_read, startDB, endDB)
+            data_read = self.client.db_read(db_read, startDB, endDB)
             if (type == 'int'):
                 result = self.disassemble_int(data_read)
             elif (type == 'real'):
