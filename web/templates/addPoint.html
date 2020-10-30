@@ -18,8 +18,9 @@
    <div id="typeValriable" class="form-group">
     <label for="type">Type</label>
     <select class="form-control" id="type" name="type">
-      <option value="int">Intager</option>
+
       <option value="real">Real</option>
+      <option value="int">Intager</option>
       <option value="double">Double Intager</option>
         <option value="bool">Boolean</option>
        <option value="area">Area DB</option>
@@ -94,12 +95,13 @@ var palitra = document.getElementById('palitra');
     let input =  document.createElement('input');
     input.name = 'tablename_'+i;
     input.classList.add('col-sm');
-
+    input.value = 'real_'+i;
     let start1 =  document.getElementById('startAddress');
     let start = start1.cloneNode(true);
     start.id = 'start_ad_'+i;
     start.getElementsByTagName("input")[0].id = "start_offset_in_data_"+i;
     start.getElementsByTagName("input")[0].name = "start_offset_in_data_"+i;
+    start.getElementsByTagName("input")[0].value = 4*(i-1);
     start.classList.add('col-sm');
 
     let typevar1 = document.getElementById('typeValriable');
