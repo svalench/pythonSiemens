@@ -3,12 +3,13 @@ import time
 import logging
 from snap7.snap7exceptions import Snap7Exception
 import cprint as cprint
-
+from multiprocessing import Process
 from secoundary_functions.module_siemens import PlcRemoteUse
 from secoundary_functions.supporting import *
 from cprint import *
 from main import main
 from main import th
+from datetime import datetime
 
 module_logger = logging.getLogger("main.thread_log")
 
@@ -53,6 +54,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._stop = threading.Event()
         self.kwargs = kwargs
         self.started = False
+        self._count = 0
         self._exception = False
         self._plc1 = None
         self._allThread.append(self)
@@ -95,7 +97,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.started = False
             th.connections[args[1]]['status'] = False
             self.log.warning(
-                'error connection, try reconnect. Reconnect from ' + str(self.kwargs['args'][0]['name'])+ " error : " +str(e))
+                'error connection, try reconnect. Reconnect from ' + str(
+                    self.kwargs['args'][0]['name']) + " error : " + str(e))
             cprint.err('error connection, try reconnection. Reconnect from ' + str(args[0]['reconnect']) + ' sec',
                        interrupt=False)
 
@@ -116,6 +119,43 @@ class MyThread(threading.Thread, metaclass=IterThread):
         type - data type (int,real,double)
 
         """
+        if (i['type'] == 'area'):
+            self._get_area_variables(i)
+        else:
+            self._write_single_variable(i)
+
+    def _get_area_variables(self, i):
+        tstart = datetime.now()
+        self._count += 1
+        a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
+        for c in i['arr']:
+            # p = Process(target=self._tread_for_write_data, args=(c, a))
+            # p.start()
+            t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
+            t.start()
+            # self._tread_for_write_data(c, a)
+        # p.join()
+        if self._count==200:
+            self._count = 0
+            t.join()
+        self._conn.commit()
+        tend = datetime.now()
+        print(tend - tstart)
+
+    def _tread_for_write_data(self, c, data):
+        value = self._plc1.transform_data_to_value(c['start'], c['offset'], data, c['type'])
+        self._write_value_to_db(c['tablename'], value)
+
+    def _write_value_to_db(self, tablename, value):
+        try:
+            self._c.execute(
+                '''INSERT INTO  ''' + tablename + ''' (value) VALUES (''' + str(value) + ''');''')
+
+        except:
+            self._conn.close()
+            self._exception = True
+
+    def _write_single_variable(self, i):
         try:
             write = True
             if (i['type'] != 'bool'):
@@ -160,12 +200,12 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._reconnect_to_plc()
         # main cycle
         while True:
+            tstart = datetime.now()
             if self not in MyThread:
                 break
             if self.stopped():
                 return False
             for i in args[0]['data']:
-                #threading.Thread(target=self._write_data_to_db,kwargs={'i':i}).start()
                 self._write_data_to_db(i)
             if (self._exception):
                 th.connections[args[1]]['status'] = False
@@ -177,4 +217,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 return False
             else:
                 cprint.info('data returned')
+                tend = datetime.now()
+                print('thread',tend-tstart)
                 time.sleep(float(args[0]['timeout']))
