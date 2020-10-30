@@ -221,7 +221,8 @@ def add_to_json(request):
             arr.append({
                 "tablename": request.form[key],
                 'start': request.form[key1],
-                'offset': offset1
+                'offset': offset1,
+                'type':request.form[tt]
             })
     if (countDataArray != 0):
         jsonData['Data'][int(request.form['id'])].append({"type": request.form['type'],
