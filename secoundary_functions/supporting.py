@@ -32,6 +32,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
     # try create table in DB
     for i in jsonDataFile['connections']:
         for a in jsonDataFile['Data'][i['data']]:
+            vsql = 'int'
             if (a['type'] == 'int'):
                 vsql = 'INT'
             if (a['type'] == 'real'):
@@ -40,12 +41,29 @@ def create_coneection_to_plc(jsonDataFile) -> None:
                 vsql = 'BIGINT'
             if (a['type'] == 'bool'):
                 vsql = 'int'
-            conn = createConnection()
-            # создаем табилцы в БД если их нет
-            conn.cursor().execute('''CREATE TABLE IF NOT EXISTS ''' + a['tablename'] + ''' \
-							    (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
-							    value ''' + vsql + ''')''')
-            conn.commit()
+            if (a['type'] == 'area'):
+                for c in a['arr']:
+                    if (c['type'] == 'int'):
+                        vsql = 'INT'
+                    if (c['type'] == 'real'):
+                        vsql = 'REAL'
+                    if (c['type'] == 'double'):
+                        vsql = 'BIGINT'
+                    if (c['type'] == 'bool'):
+                        vsql = 'int'
+                    conn = createConnection()
+                    # создаем табилцы в БД если их нет
+                    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS ''' + c['tablename'] + ''' \
+                                                        (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
+                                                        value ''' + vsql + ''')''')
+                    conn.commit()
+            else:
+                conn = createConnection()
+                # создаем табилцы в БД если их нет
+                conn.cursor().execute('''CREATE TABLE IF NOT EXISTS ''' + a['tablename'] + ''' \
+                                    (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
+                                    value ''' + vsql + ''')''')
+                conn.commit()
         # try add points to dict connection
         try:
             i['data'] = jsonDataFile['Data'][i['data']]
