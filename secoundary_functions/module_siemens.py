@@ -1,7 +1,10 @@
 import snap7
 import struct
 import json
+import logging
 
+module_logger = logging.getLogger("main.support")
+log = logging.getLogger("main.module_siemens")
 
 class PlcRemoteUse():
     """
@@ -183,15 +186,19 @@ class PlcRemoteUse():
 
     def transform_data_to_value(self,start,offset,data,type):
         end = int(start)+int(offset)
-        if (type == 'int'):
-            result = self.disassemble_int(data[int(start):int(end)])
-        elif (type == 'real'):
-            result = self.disassemble_float(data[int(start):int(end)])
-        elif (type == 'double'):
-            result = self.disassemble_int(data[int(start):int(end)])
+        try:
+            if (type == 'int'):
+                result = self.disassemble_int(data[int(start):int(end)])
+            elif (type == 'real'):
+                result = self.disassemble_float(data[int(start):int(end)])
+            elif (type == 'double'):
+                result = self.disassemble_int(data[int(start):int(end)])
+            else:
+                result = 'error type'
+        except:
+            log.warning('error disasemble')
         else:
-            result = 'error type'
-        return result
+            return result
 
     def get_value(self, db_read, startDB, endDB, type):  # получение значения с преобразование к величине
         """

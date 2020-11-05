@@ -143,8 +143,11 @@ class MyThread(threading.Thread, metaclass=IterThread):
         print(tend - tstart)
 
     def _tread_for_write_data(self, c, data):
-        value = self._plc1.transform_data_to_value(c['start'], c['offset'], data, c['type'])
-        self._write_value_to_db(c['tablename'], value)
+        try:
+            value = self._plc1.transform_data_to_value(c['start'], c['offset'], data, c['type'])
+            self._write_value_to_db(c['tablename'], value)
+        except:
+            log.warning('error sql execute')
 
     def _write_value_to_db(self, tablename, value):
         try:
