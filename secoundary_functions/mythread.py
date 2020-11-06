@@ -147,7 +147,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             value = self._plc1.transform_data_to_value(c['start'], c['offset'], data, c['type'])
             self._write_value_to_db(c['tablename'], value)
         except:
-            log.warning('error sql execute')
+            self.log.warning('error sql execute')
             self._conn.close()
             self._exception = True
 
