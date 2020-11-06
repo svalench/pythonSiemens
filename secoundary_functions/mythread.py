@@ -129,16 +129,15 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self._count += 1
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
         for c in i['arr']:
-            # p = Process(target=self._tread_for_write_data, args=(c, a))
-            # p.start()
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
-            # self._tread_for_write_data(c, a)
-        # p.join()
-        if self._count==200:
+        if self._count==50:
             self._count = 0
             t.join()
-        self._conn.commit()
+        try:
+            self._conn.commit()
+        except Exception as e:
+            self.log.warning('error commit: %s' % e)
         tend = datetime.now()
         print(tend - tstart)
 
