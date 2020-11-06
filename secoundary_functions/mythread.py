@@ -148,6 +148,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._write_value_to_db(c['tablename'], value)
         except:
             log.warning('error sql execute')
+            self._conn.close()
+            self._exception = True
 
     def _write_value_to_db(self, tablename, value):
         try:
