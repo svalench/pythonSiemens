@@ -131,7 +131,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
-        if self._count==500:
+        if self._count==200:
             self._count = 0
             t.join()
         try:
