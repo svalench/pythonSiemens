@@ -195,8 +195,9 @@ class PlcRemoteUse():
                 result = self.disassemble_int(data[int(start):int(end)])
             else:
                 result = 'error type'
-        except:
-            log.warning('error disasemble')
+        except Exception as e:
+            log.warning('error disassemble %s' % e)
+            raise Exception('error disassemble %s' % type)
         else:
             return result
 
