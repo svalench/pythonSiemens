@@ -201,12 +201,14 @@ class PlcRemoteUse():
         else:
             return result
 
-    def get_value(self, db_read, startDB, endDB, type):  # получение значения с преобразование к величине
+    def get_value(self, db_read, startDB, endDB, type) -> int or float:  # получение значения с преобразование к величине
         """
+        метод получения згначения из DB PLC
+
         :param db_read: DB in PLC from were read data
         :param startDB:  start address in DB
         :param endDB: offset from startDB
-        :param type: type variable (int,real,dint)
+        :param str type: type variable (int,real,dint)
         :return:
 
         """
