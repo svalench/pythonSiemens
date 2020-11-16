@@ -192,7 +192,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 self._conn.close()
                 self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
-            self._plc1.tear_down()
+            #self._plc1.tear_down()
             self.stop()
 
     def run(self):
