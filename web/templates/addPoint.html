@@ -115,17 +115,77 @@ var palitra = document.getElementById('palitra');
     let lable = document.createElement('lable');
     lable.innerHTML = 'write the tablename, start address and type';
 
-
+    let newdiv = document.createElement('div');
+    newdiv.classList.add('form-group');
+    newdiv.classList.add('col-sm');
+    let newinput =  document.createElement('input');
+    newinput.type = 'checkbox';
+    newinput.classList.add('form-check-input');
+    newinput.classList.add('add_new_line');
+    newinput.id = 'add_error_value_'+i;
+    newinput.addEventListener('click',radioChecker);
+    let newlable = document.createElement('lable');
+    newlable.classList.add('form-check-label');
+    newlable.innerHTML = 'set error value';
+    newlable.for = 'add_error_value_'+i;
+    newdiv.appendChild(newinput);
+    newdiv.appendChild(newlable);
     let div = document.createElement('div');
     div.classList.add('form-group');
+    div.id = "parent_row"+i;
     div.classList.add('row');
     div.appendChild(lable);
     div.appendChild(input);
     div.appendChild(typevar);
     div.appendChild(start);
+    div.appendChild(newdiv);
     palitra.appendChild(div);
+
     }
   };
+function radioChecker(e){
+  var c = this.id.split('_');
+  let num = c[c.length - 1];
+    if($(this).is(':checked')){
+      let newdiv = document.createElement('div');
+      newdiv.classList.add('form-group');
+      newdiv.classList.add('row');
+      newdiv.id = 'bind_bit_'+num;
+        let newdiv1 = document.createElement('div');
+        newdiv1.classList.add('form-group');
+        newdiv1.classList.add('col-sm');
+        let start13 =  document.getElementById('startAddress');
+        let start3 = start13.cloneNode(true);
+        start3.id = 'DB_bind_'+num;
+        start3.childNodes[1].textContent = 'DB in PLC for bind'
+        start3.childNodes[3].name = 'DB_bind_'+num;
+        start3.childNodes[3].id = 'DB_bind_'+num;
+
+        let start1 =  document.getElementById('startAddress');
+        let start = start1.cloneNode(true);
+        start.id = 'byte_bind_'+num;
+        start.childNodes[1].textContent = 'byte in PLC'
+        start.childNodes[3].name = 'byte_bind_'+num;
+        start.childNodes[3].id = 'byte_bind_'+num;
+        let start12 =  document.getElementById('startAddress');
+        let start2 = start12.cloneNode(true);
+        start2.id = 'bit_bind_'+num;
+        start2.childNodes[3].name = 'bit_bind_'+num;
+        start2.childNodes[3].id = 'bit_bind_'+num;
+        start2.childNodes[1].textContent = 'bit in byte';
+        let parent = this.parentElement.parentElement.parentElement;
+        newdiv1.innerHTML='enter the bit and byte that monitors the variable';
+        newdiv.appendChild(newdiv1);
+        newdiv.appendChild(start3);
+        newdiv.appendChild(start);
+        newdiv.appendChild(start2);
+        parent.insertBefore(newdiv,document.getElementById('parent_row'+(+num+1)));
+    }else{
+        document.getElementById('bind_bit_'+num).remove();
+    }
+
+}
+
 </script>
 
 </html>
