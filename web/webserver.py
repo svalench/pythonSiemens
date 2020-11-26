@@ -65,7 +65,7 @@ def start_page():
                 a['netmask'] = address.netmask
                 a['broadcast'] = address.broadcast
                 addresses.append(a)
-    partition_usage = psutil.disk_usage(partitions[0].mountpoint)
+    #partition_usage = psutil.disk_usage(partitions[0].mountpoint)
     name = session['username']
     obj = {'username': name,
            'about': {'IP': IPAddr,
@@ -81,9 +81,9 @@ def start_page():
                      'mem_used': svmem.used,
                      'mem_total': svmem.total,
                      'mem_percent': svmem.percent,
-                     'part_used': partition_usage.used,
-                     'part_total': partition_usage.total,
-                     'part_procent': partition_usage.percent,
+                     # 'part_used': partition_usage.used,
+                     # 'part_total': partition_usage.total,
+                     # 'part_procent': partition_usage.percent,
                      'net': addresses,
                      'net_io': net_io,
                      }
