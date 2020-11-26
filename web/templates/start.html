@@ -152,7 +152,8 @@
             Name</a></div>
         <div class="container">
             {%for c in data.connections%}
-            {% if connections[loop.index] %}
+            {{loop.index0}}
+            {% if connections[loop.index0] %}
             <hr style="width:90%;">
             <div class="row align-items-center">
                 <div class="col">
