@@ -201,6 +201,17 @@ class PlcRemoteUse():
         else:
             return result
 
+    def transform_data_to_bit(self, offset, bit, data):
+        value = int.from_bytes(data[int(offset):int(offset)+1], byteorder='little', signed=True)
+        bits = bin(value)
+        bits = bits.replace("0b", "")
+        bits = bits[::-1]
+        try:
+            status = bits[bit]
+        except:
+            status = 0
+        return status
+
     def get_value(self, db_read, startDB, endDB, type) -> int or float:  # получение значения с преобразование к величине
         """
         метод получения згначения из DB PLC
