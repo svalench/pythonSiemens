@@ -61,6 +61,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.destroyThread = False
         self.bind = {}
         self.arrayBits = {}
+        self.__last_value_not_bool = {}
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
 
     def __del__(self):
@@ -182,10 +183,20 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._exception = True
 
     def _write_single_variable(self, i):
+        """полусение одиночного значения с plc"""
         try:
             write = True
             if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
+                a = round(a,4)
+                print(self.__last_value_not_bool,a)
+                strs = str(i['type'])+str(i['DB'])+str(i['start'])
+                if (i['onchange'] != 0 and strs in self.__last_value_not_bool and self.__last_value_not_bool[strs] == a):
+                    print(a)
+                    print(self.__last_value_not_bool)
+                    write = False
+                else:
+                    self.__last_value_not_bool[strs] = a
             else:
                 if (i['tablename'] not in self.arrayBits):
                     self.arrayBits[i['tablename']] = 2
