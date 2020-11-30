@@ -189,11 +189,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
                 a = round(a,4)
-                print(self.__last_value_not_bool,a)
                 strs = str(i['type'])+str(i['DB'])+str(i['start'])
                 if (i['onchange'] != 0 and strs in self.__last_value_not_bool and self.__last_value_not_bool[strs] == a):
-                    print(a)
-                    print(self.__last_value_not_bool)
                     write = False
                 else:
                     self.__last_value_not_bool[strs] = a
