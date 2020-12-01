@@ -270,7 +270,7 @@ class BindError:
     """
     def __init__(self,data,c, plc):
         self.data = data
-        self.c= c
+        self.c = c
         self.log = logging.getLogger("main.thread__area_log_bind")
         self._plc1 = plc
         self.__accident = 0
