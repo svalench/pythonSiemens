@@ -286,6 +286,7 @@ class BindError:
 
 
     def bind_error_function(self, data, c) -> None:
+        """Метод для опредления необходимо ли отслеживание аварии для переменной. Происходит расчет начала и конца временного периода аварии"""
         self.__accident_last = self.__accident
         if 'byte_bind' in c:
             self.__accident = self._plc1.transform_data_to_bit(offset=int(c['byte_bind']), bit=int(c['bit_bind']),
