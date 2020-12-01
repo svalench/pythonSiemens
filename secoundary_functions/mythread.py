@@ -160,6 +160,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
 
     def _write_value_to_db(self, tablename, value):
+        """Запись в таблицу БД"""
         try:
             self._c.execute(
                 '''INSERT INTO  mvlab_'''+tablename+''' (value) VALUES (''' + str(value) + ''');''')
@@ -169,6 +170,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._exception = True
 
     def __write_temp_value(self, tablename, value):
+        """Запись во временную таблицу БД"""
         try:
             self._c.execute(
                 '''INSERT INTO  mvlab_temp_'''+tablename+''' (value) VALUES (''' + str(value) + ''');''')
@@ -220,6 +222,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.stop()
 
     def run(self):
+        """основной цикл потока"""
         self.log.info('start thread ' + str(self.kwargs['args'][0]['name']))
         """mail loop of thread"""
         args = self.kwargs['args']
@@ -251,6 +254,20 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
 
 class BindError:
+    """Клас для отслеживания состояния скоростных данных. Если прошло время self.dleay_upd то переносим их в таблицу долговременного хранения
+     с усреднением данных в интервале self.dleay_upd (мин) вызывая метод __transfer_data.
+    Если произола авария запрещаем перенос и выжидаем время self.deleay после чего переносим все данные без усреднения в таблицу долговременного хранения
+    с временными рамками +-self.deleay с момента начала события (аварии)
+
+     Methods
+    ==========
+
+     - __transfer_data - перенос данных из временной таблицы в основную с усреднением
+     - bind_error_function геттер класса
+     - __transfer_accident_data - перенсо данных если произошла авария
+     - _try_to_connect_db - подключение к БД
+
+    """
     def __init__(self,data,c, plc):
         self.data = data
         self.c= c
@@ -265,7 +282,6 @@ class BindError:
         self.__last_update = datetime.datetime.now()
         self.deleay = 1
         self.dleay_upd = self.deleay*2
-        self.step_upd = 1
         self.__interval = 1
 
 
