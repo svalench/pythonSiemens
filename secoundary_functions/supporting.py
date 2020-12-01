@@ -51,17 +51,13 @@ def create_coneection_to_plc(jsonDataFile) -> None:
                         vsql = 'BIGINT'
                     if (c['type'] == 'bool'):
                         vsql = 'int'
-                    if 'DB_bind' in c:
-                        temp = "temp_"
-                    else:
-                        temp = ""
+
                     conn = createConnection()
                     # создаем табилцы в БД если их нет
-                    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS mvlab_''' + temp + c['tablename'] + ''' \
+                    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS mvlab_temp_''' + c['tablename'] + ''' \
                                                         (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
                                                         value ''' + vsql + ''')''')
-                    if temp == "temp_":
-                        conn.cursor().execute('''CREATE TABLE IF NOT EXISTS mvlab_''' + c['tablename'] + ''' \
+                    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS mvlab_''' + c['tablename'] + ''' \
                                                                                 (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
                                                                                 value ''' + vsql + ''')''')
                     conn.commit()
