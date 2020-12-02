@@ -12,11 +12,11 @@ all_thread = []
 # подключение к базе данных
 DB = {
     'driver': 'postgres',
-    'dbName': 'myproject',
+    'dbName': 'db1',
     'host': 'localhost',
     'port': 5432,
-    'user': "myprojectuser",
-    'pass': 'password',
+    'user': "lex",
+    'pass': '123',
 }
 
 

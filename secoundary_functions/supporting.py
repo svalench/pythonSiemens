@@ -81,7 +81,7 @@ def create_coneection_to_plc(jsonDataFile) -> None:
         count += 1
 
 
-def start_thread(data, count):
+def start_thread(data, count) -> None:
     """
     :param data: dict with parameters connection
     :param count: number of thread
