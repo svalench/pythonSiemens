@@ -61,6 +61,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.destroyThread = False
         self.bind = {}
         self.arrayBits = {}
+        self.status_array_OEE = {}
         self.__last_value_not_bool = {}
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
 
@@ -123,11 +124,36 @@ class MyThread(threading.Thread, metaclass=IterThread):
         """
         if (i['type'] == 'area'):
             self._get_area_variables(i)
+        elif(i['type'] == 'oee_area'):
+            self._get_area_OEE_variables(i)
         else:
             self._write_single_variable(i)
 
+    def _get_area_OEE_variables(self,i) -> None:
+        """получение из плк статуса оборудования"""
+        self._count += 1
+        a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
+        for c in i['arr']:
+            if c['tablename'] not in self.status_array_OEE:
+                self.status_array_OEE[c['tablename']] = -99
+            status = int(self._plc1.transform_data_to_value(c['start'], c['offset'], a, c['type']))
+            if status != self.status_array_OEE[c['tablename']]:
+                self.status_array_OEE[c['tablename']] = status
+                self.__write_to_OEE_table(c,status)
+
+    def __write_to_OEE_table(self, c, status) -> None:
+        """запись измененного статуса ОЕЕ в БД"""
+        try:
+            self._c.execute(
+                '''INSERT INTO mvlab_oee_''' + c['tablename'] + ''' (value) VALUES (''' + str(status) + ''');''')
+            self._conn.commit()
+        except:
+            self.log.warning('error write status in  sql execute for OEE thread')
+            self._conn.close()
+            self._exception = True
+
     def _get_area_variables(self, i):
-        tstart = datetime.datetime.now()
+        """метод извлеекает из массива байт необходимые и преобразует в значение псоле чего вызывается метод на запись в БД"""
         self._count += 1
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
 
@@ -141,8 +167,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._conn.commit()
         except Exception as e:
             self.log.warning('error commit: %s' % e)
-        tend = datetime.datetime.now()
-        print(tend - tstart)
 
     def _tread_for_write_data(self, c, data):
         try:
@@ -224,7 +248,6 @@ class MyThread(threading.Thread, metaclass=IterThread):
     def run(self):
         """основной цикл потока"""
         self.log.info('start thread ' + str(self.kwargs['args'][0]['name']))
-        """mail loop of thread"""
         args = self.kwargs['args']
         self._try_connect_to_plc()
         self._try_to_connect_db()
