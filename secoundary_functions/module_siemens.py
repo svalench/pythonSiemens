@@ -185,6 +185,7 @@ class PlcRemoteUse():
         return int.from_bytes(data, "big")
 
     def transform_data_to_value(self,start,offset,data,type):
+        """преобразование полученных данных из байт в значение"""
         end = int(start)+int(offset)
         try:
             if (type == 'int'):
@@ -202,6 +203,7 @@ class PlcRemoteUse():
             return result
 
     def transform_data_to_bit(self, offset, bit, data):
+        """получение статуса бита в прочитанном массиве данных"""
         value = int.from_bytes(data[int(offset):int(offset)+1], byteorder='little', signed=True)
         bits = bin(value)
         bits = bits.replace("0b", "")
