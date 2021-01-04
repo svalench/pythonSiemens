@@ -242,6 +242,53 @@
                                 </td>
 
                             </tr>
+                            {%elif d.type == 'oee_area' %}
+                            <tr class="align-items-xl-center">
+                                <td>{{ loop.index }}</td>
+                                <td>{{d.type}}
+                                {%for vl in d.arr%}
+                                <hr>
+                                    {{vl.type}}<br>
+                                <hr>
+                                {%endfor%}
+                                </td>
+                                <td>{{d.DB}}</td>
+
+                                <td>
+                                {%for vl in d.arr%}
+                                <hr>
+                                {{vl.start}}
+
+                                <hr>
+                                {%endfor%}</td>
+                                <td>
+                                    {%for vl in d.arr%}
+                                <hr>
+                                   {{vl.offset}}
+                                <hr>
+                                {%endfor%}
+                                </td>
+                                <td>
+                                     {%for vl in d.arr%}
+                                <hr>
+                                 {{vl.tablename}}<br>
+                                <hr>
+                                {%endfor%}
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-dark btn-block" type="button">Delete Only Point
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-block" type="button">Delete Table and
+                                        Point
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+
                             {%else%}
                             <tr class="align-items-xl-center">
                                 <td>{{ loop.index }}</td>

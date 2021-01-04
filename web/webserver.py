@@ -202,6 +202,9 @@ def add_to_json(request):
     elif (request.form['type'] == 'area'):
         offset = request.form['endAddress']
         tablename = 'notable'
+    elif (request.form['type'] == 'oee_area'):
+        offset = request.form['endAddress']
+        tablename = 'notable_oee'
     else:
         offset = request.form['bit']
     arr = []
@@ -209,6 +212,29 @@ def add_to_json(request):
         onchange_write = request.form['ifchange']
     except:
         onchange_write = 0
+    if (request.form['type'] == 'oee_area'):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        for i in range(1, int(request.form['countVarOEE']) + 1):
+            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            table_name = 'name_table_oee_{}'.format(i)
+            start = 'start_address_oee_{}'.format(i)
+            off = 'off_{}'.format(i)
+            stop = 'stop_{}'.format(i)
+            run = 'run_{}'.format(i)
+            alarm = 'alarm_{}'.format(i)
+            print("===================================================")
+            arr.append({
+                    "tablename": request.form[table_name],
+                    'start': request.form[start],
+                    'offset': 2,
+                    'type': 'int',
+                    'off': request.form[off],
+                    'stop': request.form[stop],
+                    'run': request.form[run],
+                    'alarm': request.form[alarm]
+            })
+        print(arr)
+
     if (request.form['type'] == 'area'):
         for i in range(1, int(request.form['countVar']) + 1):
             tt = 'type_{}'.format(i)

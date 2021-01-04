@@ -8,7 +8,7 @@
 <div>
 	<a class="btn btn-primary" href="/">Home Page</a>
 </div>
-<div class="container">
+<div class="container-fluid">
 <form action="/add/point/{{id}}" method="POST">
   <input type="number" name="id" value="{{id}}" hidden>
 	<div id="blockTablename" class="form-group">
@@ -26,6 +26,7 @@
       <option value="double">Double Intager</option>
         <option value="bool">Boolean</option>
        <option value="area">Area DB</option>
+        <option value="oee_area">Area OEE</option>
     </select>
 
   </div>
@@ -51,6 +52,10 @@
     <label id="countVarLable" for="countVarInput">counts Variable</label>
     <input  type="number" step="1" class="form-control" id="countVarInput" value="0" name="countVar" >
   </div>
+    <div id="countVarOEE" class="form-group" hidden>
+    <label id="countVarLableOEE" for="countVarInput">counts OEE</label>
+    <input  type="number" step="1" class="form-control" id="countVarInputOEE" value="0" name="countVarOEE" >
+  </div>
   <div id="palitra">
 
   </div>
@@ -71,6 +76,7 @@ var palitra = document.getElementById('palitra');
   var block =  document.getElementById('blockBit');
    var blockDB =  document.getElementById('endAddress');
    var countVar =  document.getElementById('countVar');
+   var countVarOEE =  document.getElementById('countVarOEE');
   select.onchange = function(e){
     if(this.value=="bool"){
         lable.textContent = 'byte in db';
@@ -84,6 +90,12 @@ var palitra = document.getElementById('palitra');
         countVar.removeAttribute('hidden');
         tablename.setAttribute('hidden',true);
         tablename.getElementsByTagName("input")[0].value = '';
+    }else if(this.value=="oee_area"){
+        lable.textContent = 'start address in db';
+        blockDB.removeAttribute('hidden');
+        countVarOEE.removeAttribute('hidden');
+        tablename.setAttribute('hidden',true);
+        tablename.getElementsByTagName("input")[0].value = '';
     }else{
         lable.textContent = 'start address in db';
         block.setAttribute('hidden',true);
@@ -92,6 +104,38 @@ var palitra = document.getElementById('palitra');
         countVar.setAttribute('hidden',true);
     }
   };
+  countVarOEE.getElementsByTagName("input")[0].onchange = function(e){
+    document.getElementById('palitra').innerHTML = "";
+    var for_oee_html = "";
+    for(i=1;i<=parseInt(this.value);i++){
+    for_oee_html += `<div class="container-fluid">
+            <div class="row">
+                <div class="col text-center text-primary d-xl-flex justify-content-xl-center align-items-xl-center"><strong>NAME</strong></div>
+                <div class="col"><strong class="d-xl-flex justify-content-xl-center">Type</strong></div>
+                <div class="col"><strong class="d-xl-flex justify-content-xl-center">start address</strong></div>
+                <div class="col"><strong class="d-xl-flex justify-content-xl-center">status(int)</strong></div>
+            </div>
+            <div class="row">
+                <div class="col d-xl-flex justify-content-xl-center align-items-xl-center"><label class="d-xl-flex">enter a name table</label><input class="form-control-lg d-xl-flex justify-content-xl-center" type="text" name="name_table_oee_${i}" id="name_table_oee_${i}"></div>
+                <div class="col d-xl-flex align-items-xl-center"><input class="bg-white border rounded border-primary shadow form-control-lg d-xl-flex justify-content-xl-center" type="text" id="type_oee_${i}" name="type_oee_${i}"  value="intager" readonly=""></div>
+                <div class="col d-xl-flex align-items-xl-center"><input class="form-control-lg d-xl-flex justify-content-xl-center" type="numeric" id="start_address_oee_${i}" name="start_address_oee_${i}"></div>
+                <div class="col">
+                    <div class="row d-xl-flex align-items-xl-center">
+                        <div class="col"><label class="col-form-label">off</label></div><input class="form-control-sm d-xl-flex justify-content-xl-center" type="numeric" name="off_${i}" ></div>
+                    <div class="row d-xl-flex align-items-xl-center">
+                        <div class="col"><label class="col-form-label">stop</label></div><input class="form-control-sm d-xl-flex justify-content-xl-center" type="numeric" name="stop_${i}"></div>
+                    <div class="row d-xl-flex align-items-xl-center">
+                        <div class="col"><label class="col-form-label">run</label></div><input class="form-control-sm d-xl-flex justify-content-xl-center" type="numeric" name="run_${i}"></div>
+                    <div class="row d-xl-flex align-items-xl-center">
+                        <div class="col"><label class="col-form-label">alarm</label></div><input class="form-control-sm d-xl-flex justify-content-xl-center" type="numeric" name="alarm_${i}" style="width: 168px;"></div>
+                </div>
+            </div>
+        </div>`;
+        }
+        palitra.innerHTML=for_oee_html;
+  };
+
+
   countVar.getElementsByTagName("input")[0].onchange = function(e){
     document.getElementById('palitra').innerHTML = "";
     for(i=1;i<=parseInt(this.value);i++){
@@ -188,6 +232,19 @@ function radioChecker(e){
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 
