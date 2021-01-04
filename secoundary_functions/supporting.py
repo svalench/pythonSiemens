@@ -61,6 +61,14 @@ def create_coneection_to_plc(jsonDataFile) -> None:
                                                                                 (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
                                                                                 value ''' + vsql + ''')''')
                     conn.commit()
+            elif(a['type'] == 'oee_area'):
+                for c in a['arr']:
+                    vsql = 'int'
+                    conn = createConnection()
+                    conn.cursor().execute('''CREATE TABLE IF NOT EXISTS mvlab_oee_''' + c['tablename'] + ''' \
+                                                                            (key serial primary key,now_time TIMESTAMP  WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP, \
+                                                                            value ''' + vsql + ''')''')
+                    conn.commit()
             else:
                 conn = createConnection()
                 # создаем табилцы в БД если их нет
