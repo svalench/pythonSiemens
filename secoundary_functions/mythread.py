@@ -160,6 +160,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
         if str(a) == str(False):
             self._exception = True
+            return False
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()

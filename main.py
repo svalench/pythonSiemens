@@ -25,6 +25,7 @@ th = Threads()
 
 # стартовая функция
 def main(plc="all"):
+    threading.stack_size(64*1024)
     jsonDataFile = None
     with open('connections.json') as json_file:
         data = json.load(json_file)
