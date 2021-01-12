@@ -133,6 +133,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
         """получение из плк статуса оборудования"""
         self._count += 1
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
+        if str(a) == str(False):
+            self._exception = True
         for c in i['arr']:
             if c['tablename'] not in self.status_array_OEE:
                 self.status_array_OEE[c['tablename']] = -99
@@ -156,7 +158,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
         """метод извлеекает из массива байт необходимые и преобразует в значение псоле чего вызывается метод на запись в БД"""
         self._count += 1
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
-
+        if str(a) == str(False):
+            self._exception = True
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
@@ -209,6 +212,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             write = True
             if (i['type'] != 'bool'):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
+                if str(a) == str(False):
+                    self._exception = True
                 a = round(a,4)
                 strs = str(i['type'])+str(i['DB'])+str(i['start'])
                 if (i['onchange'] != 0 and strs in self.__last_value_not_bool and self.__last_value_not_bool[strs] == a):
@@ -249,9 +254,12 @@ class MyThread(threading.Thread, metaclass=IterThread):
         """основной цикл потока"""
         self.log.info('start thread ' + str(self.kwargs['args'][0]['name']))
         args = self.kwargs['args']
-        self._try_connect_to_plc()
-        self._try_to_connect_db()
-        self._reconnect_to_plc()
+        try:
+            self._try_connect_to_plc()
+            self._try_to_connect_db()
+            self._reconnect_to_plc()
+        except:
+            cprint.warn('Error in main ')
         # main cycle
         while True:
             tstart = datetime.datetime.now()
