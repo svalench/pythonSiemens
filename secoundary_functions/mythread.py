@@ -273,7 +273,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
-                self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by error get value")
+                self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + " by error get value")
                 time.sleep(float(args[0]['reconnect']))
                 if not self.destroyThread:
                     main(args[1])

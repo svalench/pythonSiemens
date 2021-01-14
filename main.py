@@ -25,6 +25,7 @@ th = Threads()
 
 # стартовая функция
 def main(plc="all"):
+    sys.setrecursionlimit(2097152)
     threading.stack_size(64*1024)
     jsonDataFile = None
     with open('connections.json') as json_file:
