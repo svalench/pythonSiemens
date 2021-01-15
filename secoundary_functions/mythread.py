@@ -135,6 +135,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
         if str(a) == str(False):
             self._exception = True
+            raise ValueError('stop')
         for c in i['arr']:
             if c['tablename'] not in self.status_array_OEE:
                 self.status_array_OEE[c['tablename']] = -99
@@ -153,6 +154,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.log.warning('error write status in  sql execute for OEE thread')
             self._conn.close()
             self._exception = True
+            raise ValueError('stop')
 
     def _get_area_variables(self, i):
         """метод извлеекает из массива байт необходимые и преобразует в значение псоле чего вызывается метод на запись в БД"""
@@ -160,7 +162,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
         if str(a) == str(False):
             self._exception = True
-            return False
+            raise ValueError('stop')
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
@@ -183,6 +185,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.log.warning('error sql execute')
             self._conn.close()
             self._exception = True
+            raise ValueError('stop')
 
     ############################
 
@@ -196,6 +199,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         except:
             self._conn.close()
             self._exception = True
+            return False
 
     def __write_temp_value(self, tablename, value):
         """Запись во временную таблицу БД"""
@@ -206,6 +210,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         except:
             self._conn.close()
             self._exception = True
+            raise ValueError('stop')
 
     def _write_single_variable(self, i):
         """полусение одиночного значения с plc"""
@@ -215,6 +220,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
                 if str(a) == str(False):
                     self._exception = True
+                    raise ValueError('stop')
                 a = round(a,4)
                 strs = str(i['type'])+str(i['DB'])+str(i['start'])
                 if (i['onchange'] != 0 and strs in self.__last_value_not_bool and self.__last_value_not_bool[strs] == a):
@@ -236,6 +242,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         except:
             self._conn.close()
             self._exception = True
+            raise ValueError('stop')
 
     def _reconnect_to_plc(self):
         """if connection with  PLC  not established stop this tread and create new"""
@@ -269,7 +276,12 @@ class MyThread(threading.Thread, metaclass=IterThread):
             if self.stopped():
                 return False
             for i in args[0]['data']:
-                self._write_data_to_db(i)
+                try:
+                    self._write_data_to_db(i)
+                except:
+                    if not self.destroyThread:
+                        main(args[1])
+                    return False
             if (self._exception):
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
