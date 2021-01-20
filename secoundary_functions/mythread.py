@@ -1,7 +1,6 @@
 import threading
 import time
 import logging
-from snap7.snap7exceptions import Snap7Exception
 import cprint as cprint
 from multiprocessing import Process
 from secoundary_functions.module_siemens import PlcRemoteUse
@@ -96,7 +95,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
                                       slot=int(args[0]['slot']), port=port)
             self.started = True
             th.connections[args[1]]['status'] = True
-        except Snap7Exception as e:
+        except Exception as e:
             self.started = False
             th.connections[args[1]]['status'] = False
             self.log.warning(
