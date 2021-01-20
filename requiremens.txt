@@ -1,5 +1,6 @@
 #To use python-snap7 you need to have the snap7 library installed.
 #https://python-snap7.readthedocs.io/en/latest/installation.html
+wheel
 python-snap7
 psycopg2-binary
 Flask
