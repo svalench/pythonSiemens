@@ -15,7 +15,7 @@ DB = {
     'dbName': 'db1',
     'host': 'localhost',
     'port': 5432,
-    'user': "lex",
+    'user': "lexs",
     'pass': '123',
 }
 

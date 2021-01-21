@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template
-from settings import SECRET, USERNAME, PASSWORD, TOKEN, connections, all_thread
+from settings import SECRET, USERNAME, PASSWORD, TOKEN, connections, all_thread, createConnection
 import random
 import string
 import socket
@@ -68,6 +68,7 @@ def start_page():
     partition_usage = psutil.disk_usage(partitions[0].mountpoint)
     name = session['username']
     obj = {'username': name,
+           "error": "",
            'about': {'IP': IPAddr,
                      'host': hostname,
                      'system': uname.system,
@@ -89,6 +90,86 @@ def start_page():
                      }
            }
     return render_template('start.html', res=obj, bt=bt, data=json_data, connections=th.connections)
+
+
+
+@app.route('/<error>', methods=['GET', 'POST'])
+def start_page_err(error):
+    """
+    function for start page
+    :return:
+
+    """
+    print(error)
+    from main import th
+    """if user autorization show page, otherwice redirect to login page"""
+    if 'username' not in session:
+        return redirect(url_for('login', error='loggined'))
+    if if_autorize():
+        return redirect(url_for('login', error='token is addled'))
+    json_data = None
+    """read data about all our connections"""
+    with open('connections.json') as json_file:
+        data = json.load(json_file)
+        json_data = data
+    # get data boot time
+    boot_time_timestamp = psutil.boot_time()
+    bt = datetime.fromtimestamp(boot_time_timestamp)
+    # get hostname
+    hostname = socket.gethostname()
+    # get ip pc
+    IPAddr = socket.gethostbyname(hostname)
+    # get type OS
+    uname = platform.uname()
+    # get data about virtual memory
+    svmem = psutil.virtual_memory()
+    # get data about part
+    partitions = psutil.disk_partitions()
+    # getting data about network connections
+    if_addrs = psutil.net_if_addrs()
+    net_io = psutil.net_io_counters()
+    addresses = []
+    for interface_name, interface_addresses in if_addrs.items():
+        for address in interface_addresses:
+            a = {}
+            a['name'] = interface_name
+            if str(address.family) == 'AddressFamily.AF_INET':
+                a['ip'] = address.address
+                a['netmask'] = address.netmask
+                a['broadcast'] = address.broadcast
+                addresses.append(a)
+            elif str(address.family) == 'AddressFamily.AF_PACKET':
+                a['MAC'] = address.address
+                a['netmask'] = address.netmask
+                a['broadcast'] = address.broadcast
+                addresses.append(a)
+    partition_usage = psutil.disk_usage(partitions[0].mountpoint)
+    name = session['username']
+    obj = {'username': name,
+           "error":error,
+           'about': {'IP': IPAddr,
+                     'host': hostname,
+                     'system': uname.system,
+                     'relaese': uname.release,
+                     'version': uname.version,
+                     'machine': uname.machine,
+                     'processor': uname.processor,
+                     'phisical_cpu': psutil.cpu_count(logical=False),
+                     'total_cpu': psutil.cpu_count(logical=True),
+                     'cpu_persent': psutil.cpu_percent(),
+                     'mem_used': svmem.used,
+                     'mem_total': svmem.total,
+                     'mem_percent': svmem.percent,
+                      'part_used': partition_usage.used,
+                      'part_total': partition_usage.total,
+                      'part_procent': partition_usage.percent,
+                     'net': addresses,
+                     'net_io': net_io,
+                     }
+           }
+    return render_template('start.html', res=obj, bt=bt, data=json_data, connections=th.connections)
+
+
 
 
 @app.route('/login/<error>', methods=['GET', 'POST'])
@@ -121,6 +202,12 @@ def add_connection():
     """function for add connection to file"""
     if if_autorize():
         return redirect(url_for('login', error='token is addled'))
+    try:
+        _conn = createConnection()
+        _c = _conn.cursor()
+        _conn.close()
+    except:
+        return redirect(url_for('start_page_err', error='no connection with DB'))
     if request.method == 'POST':
         json_data = None
         with open('connections.json') as json_file:
