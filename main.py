@@ -49,7 +49,7 @@ def main(plc="all"):
 
 
 if __name__ == "__main__":
-    socket_sender()
+    start_socket()
     log = logging.getLogger("main")
     log.setLevel(logging.INFO)
     fh = logging.FileHandler("log_info.log")

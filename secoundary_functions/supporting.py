@@ -9,31 +9,44 @@ from web.webserver import *
 from main import th
 import socket
 
-def socket_sender():
-    my_thread = threading.Thread(target=send_status_to_server)
-    my_thread.start()
 
-def send_status_to_server():
+def start_socket():
     try:
-        sock = socket.socket()
-        sock.connect(('localhost', SOCKET_PORT))
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = 'localhost'
+        port = SOCKET_PORT
+        conn.settimeout(0.01)
+        conn.connect((host, port))
+        conn.close()
     except:
-        socket_sender()
-    while True:
-        data = {}
-        if len(th.connections) > 0:
-            for i in th.connections:
-                data[i['name']] = [i['status'],i['name'],i['ip']]
-        print(data)
-        data = json.dumps(data).encode('utf-8')
-        try:
-            sock.send(data)
-        except:
-            sock.close()
-            socket_sender()
-            break
-        res = sock.recv(1024)
-        time.sleep(1)
+        print("run socket server")
+        my_thread = threading.Thread(target=listen_server_mvlab)
+        my_thread.start()
+
+def listen_server_mvlab():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('localhost', SOCKET_PORT))
+        s.listen()
+        conn, addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            while True:
+                try:
+                    data = conn.recv(1024)
+                    if not data:
+                        break
+                    if len(th.connections) > 0:
+                        print(th.connections)
+                        data = {}
+                        for i in th.connections:
+                            print(i)
+                            data[i['name']] = [i['status'], i['name'], i['ip']]
+                    data = json.dumps(data).encode('utf-8')
+                    print(data)
+                    conn.send(data)
+                except:
+                    conn.close()
+    start_socket()
 
 
 
