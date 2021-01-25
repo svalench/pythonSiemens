@@ -5,4 +5,4 @@ python-snap7 == 0.11
 psycopg2-binary == 2.8.6
 Flask == 1.1.1
 psutil == 5.5.1
-cprint =1.1
+cprint ==1.1
