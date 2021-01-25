@@ -36,13 +36,10 @@ def listen_server_mvlab():
                     if not data:
                         break
                     if len(th.connections) > 0:
-                        print(th.connections)
                         data = {}
                         for i in th.connections:
-                            print(i)
                             data[i['name']] = [i['status'], i['name'], i['ip']]
                     data = json.dumps(data).encode('utf-8')
-                    print(data)
                     conn.send(data)
                 except:
                     conn.close()
