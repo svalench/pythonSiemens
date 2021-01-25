@@ -6,6 +6,7 @@ USERNAME = 'wert'
 PASSWORD = '123'
 SECRET = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RTdsff'
 TOKEN = 'tokenstart3dje34dfjd'
+SOCKET_PORT = 9009
 
 connections = []
 all_thread = []
