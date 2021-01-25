@@ -1,8 +1,8 @@
 #To use python-snap7 you need to have the snap7 library installed.
 #https://python-snap7.readthedocs.io/en/latest/installation.html
 wheel == 0.34.2
-python-snap7 == 0.11
-psycopg2-binary == 2.8.6
-Flask == 1.1.1
-psutil == 5.5.1
-cprint ==1.1
+python-snap7
+psycopg2-binary
+Flask
+psutil
+cprint
