@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 
 from cprint import *
@@ -8,17 +9,34 @@ from web.webserver import *
 from main import th
 import socket
 
+def socket_sender():
+    my_thread = threading.Thread(target=send_status_to_server)
+    my_thread.start()
+
 def send_status_to_server():
-    while True:
-        with open('connections.json') as json_file:
-            data = json.load(json_file)
+    try:
         sock = socket.socket()
         sock.connect(('localhost', SOCKET_PORT))
-        sock.send(data)
+    except:
+        socket_sender()
+    while True:
+        data = {}
+        if len(th.connections) > 0:
+            for i in th.connections:
+                data[i['name']] = [i['status'],i['name'],i['ip']]
+        print(data)
+        data = json.dumps(data).encode('utf-8')
+        try:
+            sock.send(data)
+        except:
+            sock.close()
+            socket_sender()
+            break
         res = sock.recv(1024)
-        print(res)
-        sock.close()
-        time.sleep(5000)
+        time.sleep(1)
+
+
+
 
 module_logger = logging.getLogger("main.support")
 log = logging.getLogger("main.support")
