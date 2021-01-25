@@ -1,4 +1,5 @@
 import logging
+import time
 
 from cprint import *
 from settings import *
@@ -7,13 +8,17 @@ from web.webserver import *
 from main import th
 import socket
 
-def send_status_to_server(data):
-    sock = socket.socket()
-    sock.connect(('localhost', SOCKET_PORT))
-    sock.send(data)
-    res = sock.recv(1024)
-    print(res)
-    sock.close()
+def send_status_to_server():
+    while True:
+        with open('connections.json') as json_file:
+            data = json.load(json_file)
+        sock = socket.socket()
+        sock.connect(('localhost', SOCKET_PORT))
+        sock.send(data)
+        res = sock.recv(1024)
+        print(res)
+        sock.close()
+        time.sleep(5000)
 
 module_logger = logging.getLogger("main.support")
 log = logging.getLogger("main.support")
