@@ -163,7 +163,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._exception = True
             self._conn.close()
             self._plc1.tear_down()
-
+            self.log.warning('error data Get False from connection')
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
