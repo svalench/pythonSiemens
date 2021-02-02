@@ -214,11 +214,11 @@ class MyThread(threading.Thread, metaclass=IterThread):
         try:
             self._c.execute(
                 '''INSERT INTO  mvlab_temp_'''+tablename+''' (value) VALUES (''' + str(value) + ''');''')
-
+            return True
         except:
             self._conn.close()
             self._exception = True
-            raise ValueError('stop')
+            return False
 
     def _write_single_variable(self, i):
         """полусение одиночного значения с plc"""
@@ -228,7 +228,9 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 a = self._plc1.get_value(int(i['DB']), int(i['start']), int(i['offset']), i['type'])
                 if str(a) == str(False):
                     self._exception = True
-                    raise ValueError('stop')
+                    self._c.close()
+                    self._conn.close()
+                    return False
                 a = round(a,4)
                 strs = str(i['type'])+str(i['DB'])+str(i['start'])
                 if (i['onchange'] != 0 and strs in self.__last_value_not_bool and self.__last_value_not_bool[strs] == a):
