@@ -66,17 +66,26 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
     def __del__(self):
         self._plc1.tear_down()
-        self._conn.close()
+        try:
+            self._conn.close()
+        except:
+            print('qursor sql error')
         self._allThread.remove(self)
 
     def delete_from_list(self, obj):
-        self._conn.close()
+        try:
+            self._conn.close()
+        except:
+            print('qursor sql error')
         self._allThread.remove(obj)
 
     def stop(self):
         """stop this thread"""
         self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + "by stop mode")
-        self._conn.close()
+        try:
+            self._conn.close()
+        except:
+            print('qursor sql error')
         self._stop.set()
 
     def stopped(self):
@@ -152,7 +161,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
             return True
         except:
             self.log.warning('error write status in  sql execute for OEE thread')
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._exception = True
             return False
 
@@ -162,7 +174,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
         a = self._plc1.get_data(int(i['DB']), int(i['start']), int(i['offset']))
         if str(a) == str(False):
             self._exception = True
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._plc1.tear_down()
             self.log.warning('error area data! see 166 string')
             return False
@@ -177,7 +192,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
             return True
         except Exception as e:
             self._exception = True
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._plc1.tear_down()
             self.log.warning('error commit: %s' % e)
             return False
@@ -192,7 +210,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
         except:
             self.log.warning('error sql execute')
             self._exception = True
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._plc1.tear_down()
             return False
 
@@ -206,7 +227,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 '''INSERT INTO  mvlab_'''+tablename+''' (value) VALUES (''' + str(value) + ''');''')
 
         except:
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._exception = True
             return False
 
@@ -217,7 +241,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 '''INSERT INTO  mvlab_temp_'''+tablename+''' (value) VALUES (''' + str(value) + ''');''')
             return True
         except:
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._exception = True
             return False
 
@@ -230,7 +257,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 if str(a) == str(False):
                     self._exception = True
                     self._c.close()
-                    self._conn.close()
+                    try:
+                        self._conn.close()
+                    except:
+                        print('qursor sql error')
                     return False
                 a = round(a,4)
                 strs = str(i['type'])+str(i['DB'])+str(i['start'])
@@ -252,7 +282,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 self._conn.commit()
                 return True
         except:
-            self._conn.close()
+            try:
+                self._conn.close()
+            except:
+                print('qursor sql error')
             self._exception = True
             return False
 
@@ -265,7 +298,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
             time.sleep(int(self.kwargs['args'][0]['reconnect']))
             if not self.destroyThread:
                 self._c.close()
-                self._conn.close()
+                try:
+                    self._conn.close()
+                except:
+                    print('qursor sql error')
                 self.log.warning('restart thread ' + str(self.kwargs['args'][0]['name']))
                 main(self.kwargs['args'][1])
             self.stop()
