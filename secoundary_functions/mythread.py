@@ -191,8 +191,9 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self.__write_temp_value(c['tablename'], value)
         except:
             self.log.warning('error sql execute')
-            self._conn.close()
             self._exception = True
+            self._conn.close()
+            self._plc1.tear_down()
             raise ValueError('stop')
 
     ############################
