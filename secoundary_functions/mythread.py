@@ -329,12 +329,13 @@ class MyThread(threading.Thread, metaclass=IterThread):
                     if not self._write_data_to_db(i):
                         if not self.destroyThread:
                             main(args[1])
-                        break;
+                        return False
                 except:
                     if not self.destroyThread:
                         main(args[1])
                     return False
             if (self._exception):
+                th.connections[args[1]]['status'] = False
                 th.connections[args[1]]['status'] = False
                 cprint.warn('Error getter value')
                 self.log.warning('stop thread ' + str(self.kwargs['args'][0]['name']) + " by error get value")
