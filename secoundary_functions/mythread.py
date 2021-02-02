@@ -346,7 +346,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             else:
                 cprint.info('data returned')
                 tend = datetime.datetime.now()
-                #print('thread', tend-tstart)
+                print('thread', tend-tstart)
                 time.sleep(float(args[0]['timeout']))
 
 
