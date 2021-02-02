@@ -194,7 +194,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._exception = True
             self._conn.close()
             self._plc1.tear_down()
-            raise ValueError('stop')
+            return False
 
     ############################
 
