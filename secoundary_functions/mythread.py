@@ -62,6 +62,7 @@ class MyThread(threading.Thread, metaclass=IterThread):
         self.arrayBits = {}
         self.status_array_OEE = {}
         self.__last_value_not_bool = {}
+        self._try_to_connect_db()
         self.log = logging.getLogger("main.thread_log." + str(self.kwargs['args'][0]['name']))
 
     def __del__(self):
