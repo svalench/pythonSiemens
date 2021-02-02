@@ -122,11 +122,11 @@ class MyThread(threading.Thread, metaclass=IterThread):
 
         """
         if (i['type'] == 'area'):
-            self._get_area_variables(i)
+            return self._get_area_variables(i)
         elif(i['type'] == 'oee_area'):
-            self._get_area_OEE_variables(i)
+            return self._get_area_OEE_variables(i)
         else:
-            self._write_single_variable(i)
+            return self._write_single_variable(i)
 
     def _get_area_OEE_variables(self,i) -> None:
         """получение из плк статуса оборудования"""
@@ -149,11 +149,12 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._c.execute(
                 '''INSERT INTO mvlab_oee_''' + c['tablename'] + ''' (value) VALUES (''' + str(status) + ''');''')
             self._conn.commit()
+            return True
         except:
             self.log.warning('error write status in  sql execute for OEE thread')
             self._conn.close()
             self._exception = True
-            raise ValueError('stop')
+            return False
 
     def _get_area_variables(self, i):
         """метод извлеекает из массива байт необходимые и преобразует в значение псоле чего вызывается метод на запись в БД"""
@@ -163,7 +164,8 @@ class MyThread(threading.Thread, metaclass=IterThread):
             self._exception = True
             self._conn.close()
             self._plc1.tear_down()
-            self.log.warning('error data Get False from connection')
+            self.log.warning('error area data! see 166 string')
+            return False
         for c in i['arr']:
             t = threading.Thread(target=self._tread_for_write_data, args=[c, a])
             t.start()
@@ -172,8 +174,13 @@ class MyThread(threading.Thread, metaclass=IterThread):
             t.join()
         try:
             self._conn.commit()
+            return True
         except Exception as e:
+            self._exception = True
+            self._conn.close()
+            self._plc1.tear_down()
             self.log.warning('error commit: %s' % e)
+            return False
 
     def _tread_for_write_data(self, c, data):
         try:
@@ -240,10 +247,11 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 self._c.execute(
                     '''INSERT INTO mvlab_''' + i['tablename'] + ''' (value) VALUES (''' + str(a) + ''');''')
                 self._conn.commit()
+                return True
         except:
             self._conn.close()
             self._exception = True
-            raise ValueError('stop')
+            return False
 
     def _reconnect_to_plc(self):
         """if connection with  PLC  not established stop this tread and create new"""
