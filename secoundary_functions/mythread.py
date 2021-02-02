@@ -286,7 +286,10 @@ class MyThread(threading.Thread, metaclass=IterThread):
                 return False
             for i in args[0]['data']:
                 try:
-                    self._write_data_to_db(i)
+                    if not self._write_data_to_db(i):
+                        if not self.destroyThread:
+                            main(args[1])
+                        break;
                 except:
                     if not self.destroyThread:
                         main(args[1])
