@@ -1,7 +1,7 @@
 #To use python-snap7 you need to have the snap7 library installed.
 #https://python-snap7.readthedocs.io/en/latest/installation.html
 wheel == 0.34.2
-python-snap7
+python-snap7 == 0.11
 psycopg2-binary
 Flask
 psutil
